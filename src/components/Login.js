@@ -1,107 +1,125 @@
 import React, { useState } from 'react'
-import styles from './login.module.css'
-import { Link } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { Link, useNavigate } from 'react-router-dom';
+import Alert from './Alert.js';
+const Login = () => {
+    const [alert, setAlert] = useState(null);
+    const navigate = useNavigate();
+    const closeAlert = () => {
+        setAlert(null); // Set alert to null to remove the alert
+    };
+    const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+    });
 
-export default function Login() {
-	// let goBack = () => {
-	// 	window.history.back();
-	// }
-	const [email, setEmail] = useState('');
-	const [password, setPassword] = useState('');
-	const [submitted, setSubmitted] = useState(false);
-	const [error, setError] = useState(false);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
 
-	const handleEmail = (e) => {
-		setEmail(e.target.value);
-		setSubmitted(false);
-	};
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-	const handlePassword = (e) => {
-		setPassword(e.target.value);
-		setSubmitted(false);
-	};
+        try {
+            const response = await fetch('http://localhost:5000/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
 
-	const handleSubmit = (e) => {
-		e.preventDefault();
-		if (email === '' || password === '') {
-			setError(true);
-			toast.error('Please enter all the fields');
-		} else {
-			setSubmitted(true);
-			setError(false);
-			toast.success('Welcome!', {
-				position: "top-center",
-				autoClose: 2000,
-				hideProgressBar: true,
-				closeOnClick: true,
-				pauseOnHover: true,
-				draggable: true,
-				progress: undefined,
-				theme: "dark",
-			});
-		}
-	};
+            const data = await response.json();
 
-
-	return (
-		<div>
-			{/* <button className={styles['btn-back']} onClick={goBack}> Back </button> */}
-			<div className={styles["form-container"]}>
-				<p className={styles.title}>Login</p>
-				<form className={styles.form}>
-					<div className={styles['input-group']}>
-						<label htmlFor="email">Email</label>
-						<input type="text" name="email" id="email" placeholder="" onChange={handleEmail} value={email} />
-					</div>
-					<div className={styles['input-group']}>
-						<label htmlFor="password">Password</label>
-						<input type="password" name="password" id="password" placeholder="" onChange={handlePassword} value={password} />
-						<div className={styles.forgot}>
-							<Link rel="noopener noreferrer" to="#">Forgot Password ?</Link>
-						</div>
-					</div>
-					<button className={styles.sign} onClick={handleSubmit} type='submit'>Login</button>
-				</form>
-				<div className={styles['social-message']}>
-					<div className={styles.line}></div>
-					<p className={styles.message}>Login with social accounts</p>
-					<div className={styles.line}></div>
-				</div>
-				<div className={styles['social-icons']}>
-					<button aria-label="Log in with Google" className={styles.icon}>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={styles["w-5 h-5 fill-current"]}>
-							<path d="M16.318 13.714v5.484h9.078c-0.37 2.354-2.745 6.901-9.078 6.901-5.458 0-9.917-4.521-9.917-10.099s4.458-10.099 9.917-10.099c3.109 0 5.193 1.318 6.38 2.464l4.339-4.182c-2.786-2.599-6.396-4.182-10.719-4.182-8.844 0-16 7.151-16 16s7.156 16 16 16c9.234 0 15.365-6.49 15.365-15.635 0-1.052-0.115-1.854-0.255-2.651z"></path>
-						</svg>
-					</button>
-					<button aria-label="Log in with Twitter" className={styles.icon}>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={styles["w-5 h-5 fill-current"]}>
-							<path d="M31.937 6.093c-1.177 0.516-2.437 0.871-3.765 1.032 1.355-0.813 2.391-2.099 2.885-3.631-1.271 0.74-2.677 1.276-4.172 1.579-1.192-1.276-2.896-2.079-4.787-2.079-3.625 0-6.563 2.937-6.563 6.557 0 0.521 0.063 1.021 0.172 1.495-5.453-0.255-10.287-2.875-13.52-6.833-0.568 0.964-0.891 2.084-0.891 3.303 0 2.281 1.161 4.281 2.916 5.457-1.073-0.031-2.083-0.328-2.968-0.817v0.079c0 3.181 2.26 5.833 5.26 6.437-0.547 0.145-1.131 0.229-1.724 0.229-0.421 0-0.823-0.041-1.224-0.115 0.844 2.604 3.26 4.5 6.14 4.557-2.239 1.755-5.077 2.801-8.135 2.801-0.521 0-1.041-0.025-1.563-0.088 2.917 1.86 6.36 2.948 10.079 2.948 12.067 0 18.661-9.995 18.661-18.651 0-0.276 0-0.557-0.021-0.839 1.287-0.917 2.401-2.079 3.281-3.396z"></path>
-						</svg>
-					</button>
-					<button aria-label="Log in with GitHub" className={styles.icon}>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className={styles["w-5 h-5 fill-current"]}>
-							<path d="M16 0.396c-8.839 0-16 7.167-16 16 0 7.073 4.584 13.068 10.937 15.183 0.803 0.151 1.093-0.344 1.093-0.772 0-0.38-0.009-1.385-0.015-2.719-4.453 0.964-5.391-2.151-5.391-2.151-0.729-1.844-1.781-2.339-1.781-2.339-1.448-0.989 0.115-0.968 0.115-0.968 1.604 0.109 2.448 1.645 2.448 1.645 1.427 2.448 3.744 1.74 4.661 1.328 0.14-1.031 0.557-1.74 1.011-2.135-3.552-0.401-7.287-1.776-7.287-7.907 0-1.751 0.62-3.177 1.645-4.297-0.177-0.401-0.719-2.031 0.141-4.235 0 0 1.339-0.427 4.4 1.641 1.281-0.355 2.641-0.532 4-0.541 1.36 0.009 2.719 0.187 4 0.541 3.043-2.068 4.381-1.641 4.381-1.641 0.859 2.204 0.317 3.833 0.161 4.235 1.015 1.12 1.635 2.547 1.635 4.297 0 6.145-3.74 7.5-7.296 7.891 0.556 0.479 1.077 1.464 1.077 2.959 0 2.14-0.020 3.864-0.020 4.385 0 0.416 0.28 0.916 1.104 0.755 6.4-2.093 10.979-8.093 10.979-15.156 0-8.833-7.161-16-16-16z"></path>
-						</svg>
-					</button>
-				</div>
-				<p className={styles.signup}>Don't have an account?
-					<Link rel="noopener noreferrer" to="/signup" className=""> Sign up</Link>
-				</p>
-				<ToastContainer
-					position="top-right"
-					autoClose={2000}
-					hideProgressBar
-					newestOnTop={false}
-					closeOnClick
-					rtl={false}
-					pauseOnFocusLoss
-					draggable
-					pauseOnHover
-					theme="dark"
-				/>
-			</div>
-		</div>
-	)
+            if (response.ok) {
+                localStorage.setItem('authtoken', data.authtoken); // Store the token in localStorage
+                navigate('/market');
+                // Optionally, you can perform additional actions for a successful login
+            } else {
+                if (response.status === 400) {
+                    setAlert({
+                        type: 'danger',
+                        message: 'Please login with correct credentials',
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error during login:', error.message || 'Network error');
+        }
+    };
+    return (
+        <>
+            <Alert alert={alert} closeAlert={closeAlert} />
+            <section className="py-5">
+                <div className="container py-5">
+                    <div className="row mb-4 mb-lg-5">
+                        <div className="col-md-8 col-xl-6 text-center mx-auto">
+                            <p className="fw-bold text-success mb-2">Login</p>
+                            <h2 className="fw-bold">Welcome</h2>
+                        </div>
+                    </div>
+                    <div className="row d-flex justify-content-center">
+                        <div className="col-md-6 col-xl-4">
+                            <div className="card">
+                                <div className="card-body text-center d-flex flex-column align-items-center">
+                                    <div className="bs-icon-xl bs-icon-circle bs-icon-primary shadow bs-icon my-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" className="bi bi-person">
+                                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"></path>
+                                        </svg>
+                                    </div>
+                                    <form method="post" onSubmit={handleSubmit}>
+                                        <div className="mb-3"><input className="form-control" type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} autoComplete="username" /></div>
+                                        <div className="mb-3"><input className="form-control" type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} autoComplete="current-password" /></div>
+                                        <div className="mb-3"><button className="btn btn-primary shadow d-block w-100" type="submit">Login</button></div>
+                                        <p className="text-muted">Create an account&nbsp;<Link to="/signup">Sign Up</Link></p>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <footer className="bg-dark">
+                <div className="container py-4 py-lg-5">
+                    <footer>
+                        <div className="row">
+                            <div className="col-sm-6 col-md-4 footer-navigation">
+                                <h3><a href="#">Company<span>logo </span></a></h3>
+                                <p className="links"><a href="#">Home</a><strong> · </strong><a href="#">Blog</a><strong> · </strong><a href="#">Pricing</a><strong> · </strong><a href="#">About</a><strong> · </strong><a href="#">Faq</a><strong> · </strong><a href="#">Contact</a></p>
+                                <p className="company-name">Company Name © 2015 </p>
+                            </div>
+                            <div className="col-sm-6 col-md-4 footer-contacts">
+                                <div><span className="fa fa-map-marker footer-contacts-icon"> </span>
+                                    <p><span className="new-line-span">21 Revolution Street</span> Paris, France</p>
+                                </div>
+                                <div><i className="fa fa-phone footer-contacts-icon"></i>
+                                    <p className="footer-center-info email text-start"> +1 555 123456</p>
+                                </div>
+                                <div><i className="fa fa-envelope footer-contacts-icon"></i>
+                                    <p> <a href="#" target="_blank">support@company.com</a></p>
+                                </div>
+                            </div>
+                            <div className="col-md-4 footer-about">
+                                <h4>About the creator</h4>
+                                <p> Lorem ipsum dolor sit amet, consectateur adispicing elit. Fusce euismod convallis velit, eu auctor lacus vehicula sit amet. </p>
+                                <div className="social-links social-icons"><a href="#"><i className="fa fa-facebook"></i></a><a href="#"><i className="fa fa-twitter"></i></a><a href="#"><i className="fa fa-linkedin"></i></a><a href="#"><i className="fa fa-github"></i></a></div>
+                            </div>
+                        </div>
+                    </footer>
+                    <hr />
+                    <div className="text-muted d-flex justify-content-between align-items-center pt-3">
+                        <p className="mb-0">Copyright © 2023 TradeSiml</p>
+                    </div>
+                </div>
+            </footer>
+            <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+            <script src="assets/js/bs-init.js"></script>
+            <script src="assets/js/bold-and-dark.js"></script>
+        </>
+    )
 }
+
+export default Login

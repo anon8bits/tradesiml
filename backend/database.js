@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
+import { connect } from 'mongoose';
 
 const mongoURI = "mongodb://0.0.0.0:27017/tradesiml";
 
 const connectToMongo = () => {
-  mongoose.connect(mongoURI, {
+  connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -15,4 +15,4 @@ const connectToMongo = () => {
     });
 }
 
-module.exports = connectToMongo;
+export default connectToMongo;

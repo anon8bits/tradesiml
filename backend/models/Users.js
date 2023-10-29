@@ -1,8 +1,12 @@
-const mongoose = require('mongoose');
+import mongoose, { model } from 'mongoose';
 const { Schema } = mongoose;
 const userSchema = new Schema({
-    name: {
+    fname: {
         type: String,
+        required: true
+    },
+    lname: {
+        type:String,
         required: true
     },
     email: {
@@ -20,6 +24,6 @@ const userSchema = new Schema({
     },
 });
 
-const User = mongoose.model('user', userSchema);
+const User = model('user', userSchema);
 User.createIndexes();
-module.exports = User;
+export default User;
