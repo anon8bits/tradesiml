@@ -10,16 +10,16 @@ const JWT_secret = "395539685e5fe9ef44a24c1e9f25b811"
 const { genSalt, hash, compare } = bcrypt;
 const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
 router.post('/createuser', [
-  body('fname', 'First name cannot be blank').exists(),
-  body('lname', 'Last name cannot be blank').exists(),
-  body('email', 'Please enter a valid email').isEmail(),
+  body('fname').notEmpty().withMessage('First name cannot be blank').isString().withMessage('Please enter a valid name'),
+  body('lname').notEmpty().withMessage('Last name cannot be blank').isString().withMessage('Please enter a valid name'),
+  body('email').isEmail().withMessage('Please enter a valid email'),
   body('password')
-  .isLength({ min: 8 })
-  .matches(passwordRegex)
-  .withMessage('Password must contain at least one uppercase letter, one number, and one symbol'),
+    .isLength({ min: 8 })
+    .matches(passwordRegex)
+    .withMessage('Password must contain at least one uppercase letter, one number, and one symbol')
 ], async (req, res) => {
   const result = validationResult(req);
-  if (!result.isEmpty()) {
+  if (!result.isEmpty()) {  
     return res.status(400).json({ errors: result.array() });
   }
 

@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import Alert from './Alert.js';
 
 const Signup = () => {
   const navigate = useNavigate();
+  const [alert, setAlert] = useState(null);
   const [formData, setFormData] = useState({
     fname: '',
     lname: '',
@@ -19,6 +21,7 @@ const Signup = () => {
   };
 
   const handleSubmit = async (e) => {
+    console.log(JSON.stringify(formData));
     e.preventDefault();
     try {
       const response = await fetch('http://localhost:5000/api/auth/createuser', {
@@ -28,20 +31,45 @@ const Signup = () => {
         },
         body: JSON.stringify(formData),
       });
-
       const data = await response.json();
-
       if (response.ok) {
         navigate('/market');
       } else {
-        console.error('Error creating user:', data.error || 'Server error');
+        if (data.errors[0].path === 'fname') {
+          setAlert({
+            type: 'danger',
+            message: 'Please enter your first name'
+          });
+        } else if (data.errors[0].path === 'lname') {
+          setAlert({
+            type: 'danger',
+            message: 'Please enter your last name'
+          });
+        }else if (data.errors[0].path === 'email') {
+          setAlert({
+            type: 'danger',
+            message: 'Please enter a valid email'
+          });
+        } else if (data.errors[0].path === 'password') {
+          setAlert({
+            type: 'danger',
+            message: 'Password must contain at least one uppercase letter, one number, and one symbol'
+          });
+        } else {
+          setAlert({
+            type: 'danger',
+            message: 'Some error occured'
+          });
+        }
       }
     } catch (error) {
       console.error('Error creating user:', error.message || 'Network error');
     }
   };
+
   return (
     <>
+      <Alert alert={alert} closeAlert={setAlert} />
       <section className="py-5">
         <div className="container py-5">
           <div className="row mb-4 mb-lg-5">
@@ -62,8 +90,8 @@ const Signup = () => {
                   <form method="post" onSubmit={handleSubmit}>
                     <div className="mb-3"><input className="form-control" type="text" name="fname" placeholder="First Name" value={formData.fname} onChange={handleChange} /></div>
                     <div className="mb-3"><input className="form-control" type="text" name="lname" placeholder="Last Name" value={formData.lname} onChange={handleChange} /></div>
-                    <div className="mb-3"><input className="form-control" type="email" name="email" placeholder="Email" value={formData.email} onChange={handleChange} /></div>
-                    <div className="mb-3"><input className="form-control" type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} /></div>
+                    <div className="mb-3"><input className="form-control" type="email" name="email" placeholder="Email" value={formData.email} autoComplete="username" onChange={handleChange} /></div>
+                    <div className="mb-3"><input className="form-control" type="password" name="password" placeholder="Password" value={formData.password} autoComplete="current-password" onChange={handleChange} /></div>
                     <div className="mb-3"><button className="btn btn-primary shadow d-block w-100" type="submit">Sign up</button></div>
                     <p className="text-muted">Already have an account?&nbsp;<Link to="/login">Log in</Link></p>
                   </form>
