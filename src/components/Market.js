@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import StockDetail from './StockDetail.js';
+import { Link, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 
 const Market = () => {
@@ -38,6 +40,7 @@ const Market = () => {
 
     const handleIndexChange = (event) => {
         setSelectedIndex(event.target.value);
+        setCurrentPage(1);
     };
 
     const renderStockCards = () => {
@@ -45,9 +48,22 @@ const Market = () => {
         const indexOfFirstStock = indexOfLastStock - stocksPerPage;
         const currentStocks = stocks.slice(indexOfFirstStock, indexOfLastStock);
 
+        const totalPages = Math.ceil(stocks.length / stocksPerPage);
+
+        let startPage = Math.max(1, currentPage - 5);
+        let endPage = Math.min(totalPages, startPage + 9);
+
+        if (endPage - startPage < 9) {
+            startPage = Math.max(1, endPage - 9);
+        }
+
+        const pageNumbers = [];
+        for (let i = startPage; i <= endPage; i++) {
+            pageNumbers.push(i);
+        }
+
         return (
             <div className="container mt-4">
-                <h1 className="text-center mb-4">Stock Market</h1>
                 <div className="row">
                     {currentStocks.map((stock) => (
                         <div key={stock.symbol} className="col-md-4 mb-4">
@@ -62,13 +78,57 @@ const Market = () => {
                     ))}
                 </div>
                 <div className="pagination">
-                    <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1}>Previous</button>
-                    <span>{currentPage}</span>
-                    <button onClick={() => setCurrentPage(currentPage + 1)} disabled={indexOfLastStock >= stocks.length}>Next</button>
+                    <button onClick={() => { setCurrentPage(currentPage - 1); window.scrollTo(0, 0); }} disabled={currentPage === 1}>
+                        Previous
+                    </button>
+                    <div className="page-numbers-container">
+                        {pageNumbers.map((number) => (
+                            <button
+                                key={number}
+                                onClick={() => { setCurrentPage(number); window.scrollTo(0, 0); }}
+                                className={currentPage === number ? 'active' : ''}
+                            >
+                                {number}
+                            </button>
+                        ))}
+                    </div>
+                    <button onClick={() => { setCurrentPage(currentPage + 1); window.scrollTo(0, 0); }} disabled={currentPage === totalPages}>
+                        Next
+                    </button>
                 </div>
+                <style>{`
+                .pagination {
+                text-align: center;
+                }
+
+                .pagination button {
+                margin: 0 5px;
+                padding: 5px 10px;
+                border: 1px solid #ccc;
+                cursor: pointer;
+                }
+
+                .page-numbers-container {
+                display: flex;
+                justify-content: center;
+                }
+
+                .pagination button.active {
+                background-color: #4caf50;
+                color: white;
+                }
+
+                .pagination button:disabled {
+                color: #aaa;
+                cursor: not-allowed;
+                }
+      `}</style>
             </div>
         );
     };
+
+
+
 
     const renderStockDetails = () => {
         if (selectedStock) {
@@ -115,7 +175,7 @@ const Market = () => {
     return (
         <div>
             <div className="container text-center mt-4">
-                <h1>Stock Market</h1>
+                <h3>Select Stock Index</h3>
                 <select value={selectedIndex} onChange={handleIndexChange}>
                     {indexOptions.map((option, index) => (
                         <option key={index} value={option}>
