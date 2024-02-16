@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import StockDetail from './StockDetail.js';
-import { Link, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 
 const Market = () => {
@@ -9,7 +7,8 @@ const Market = () => {
     const [selectedIndex, setSelectedIndex] = useState('NIFTY 50');
     const [currentPage, setCurrentPage] = useState(1);
     const stocksPerPage = 20;
-    const fetchStockData = async () => {
+
+    const fetchData = async () => {
         const options = {
             method: 'GET',
             url: 'https://latest-stock-price.p.rapidapi.com/price',
@@ -25,12 +24,21 @@ const Market = () => {
         try {
             const response = await axios.request(options);
             setStocks(response.data);
+            localStorage.setItem(selectedIndex, JSON.stringify(response));
         } catch (error) {
             console.error(error);
+            alert("API currently down! Please try again later");
         }
     };
 
     useEffect(() => {
+        const fetchStockData = async () => {
+            const data = await fetchData(selectedIndex);
+            if (data) {
+                setStocks(data);
+            }
+        };
+
         fetchStockData();
     }, [selectedIndex]);
 
@@ -77,7 +85,7 @@ const Market = () => {
                         </div>
                     ))}
                 </div>
-                <div className="pagination">
+                <div className="pagination d-flex justify-content-center"> 
                     <button onClick={() => { setCurrentPage(currentPage - 1); window.scrollTo(0, 0); }} disabled={currentPage === 1}>
                         Previous
                     </button>
@@ -97,37 +105,37 @@ const Market = () => {
                     </button>
                 </div>
                 <style>{`
-                .pagination {
-                text-align: center;
-                }
+        .pagination {
+            text-align: center;
+            margin-top: 20px; /* Adjust the margin as needed */
+        }
 
-                .pagination button {
-                margin: 0 5px;
-                padding: 5px 10px;
-                border: 1px solid #ccc;
-                cursor: pointer;
-                }
+        .pagination button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
 
-                .page-numbers-container {
-                display: flex;
-                justify-content: center;
-                }
+        .page-numbers-container {
+            display: flex;
+            justify-content: center;
+        }
 
-                .pagination button.active {
-                background-color: #4caf50;
-                color: white;
-                }
+        .pagination button.active {
+            background-color: #4caf50;
+            color: white;
+        }
 
-                .pagination button:disabled {
-                color: #aaa;
-                cursor: not-allowed;
-                }
-      `}</style>
+        .pagination button:disabled {
+            color: #aaa;
+            cursor: not-allowed;
+        }
+    `}</style>
             </div>
+
         );
     };
-
-
 
 
     const renderStockDetails = () => {
@@ -137,7 +145,6 @@ const Market = () => {
                     <h2>Stock Details</h2>
                     <p>Symbol: {selectedStock.symbol}</p>
                     <p>Identifier: {selectedStock.identifier}</p>
-                    {/* Add more details as needed */}
                 </div>
             );
         }

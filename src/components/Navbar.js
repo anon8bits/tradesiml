@@ -24,12 +24,12 @@ function Navbar() {
                 <div className="collapse navbar-collapse" id="navcol-1">
                     <ul className="navbar-nav me-auto">
                         <li className="nav-item">
-                            <NavLink exact className="nav-link" activeClassName="active" to="/">
+                            <NavLink exact="true" className="nav-link" activeclassname="active" to="/">
                                 Home
                             </NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" activeClassName="active" to="/market">
+                            <NavLink className="nav-link" activeclassname="active" to="/market">
                                 Market
                             </NavLink>
                         </li>

@@ -12,10 +12,10 @@ function Alert(props) {
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      props.closeAlert(); // Call the closeAlert function to remove the alert
+      props.closeAlert();
     }, 3000);
 
-    return () => clearTimeout(timeoutId); // Clear the timeout on component unmount or alert change
+    return () => clearTimeout(timeoutId);
   }, [props]);
 
   const alertStyle = {
@@ -25,7 +25,7 @@ function Alert(props) {
     transform: 'translate(-50%, -50%)',
     zIndex: 9999,
     width: '100%',
-    maxWidth: '400px', // Adjust the max-width as needed
+    maxWidth: '400px',
   };
 
   return (
