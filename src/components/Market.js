@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import StockDetail from './StockDetail.js';
+import { useStock } from './StockContext.js';
 
 const Market = () => {
     const [stocks, setStocks] = useState([]);
-    const [selectedStock, setSelectedStock] = useState(null);
-    const [selectedIndex, setSelectedIndex] = useState('NIFTY 50');
+    const { selectedIndex, selectedStock, setSelectedStock, setSelectedIndex } = useStock();
     const [currentPage, setCurrentPage] = useState(1);
     const stocksPerPage = 20;
-
+    const navigate = useNavigate();
     const fetchData = async () => {
         const options = {
             method: 'GET',
@@ -24,10 +26,10 @@ const Market = () => {
         try {
             const response = await axios.request(options);
             setStocks(response.data);
-            localStorage.setItem(selectedIndex, JSON.stringify(response));
+            localStorage.setItem(selectedIndex, JSON.stringify(response.data));
         } catch (error) {
             console.error(error);
-            alert("API currently down! Please try again later");
+            alert("API currently down :( Please try again later");
         }
     };
 
@@ -44,6 +46,8 @@ const Market = () => {
 
     const handleClick = (stock) => {
         setSelectedStock(stock);
+        console.log('current stock: ' + selectedStock);
+        navigate(`/market/${selectedIndex}/${stock.symbol}`);
     };
 
     const handleIndexChange = (event) => {
@@ -85,7 +89,7 @@ const Market = () => {
                         </div>
                     ))}
                 </div>
-                <div className="pagination d-flex justify-content-center"> 
+                <div className="pagination d-flex justify-content-center">
                     <button onClick={() => { setCurrentPage(currentPage - 1); window.scrollTo(0, 0); }} disabled={currentPage === 1}>
                         Previous
                     </button>
@@ -133,22 +137,7 @@ const Market = () => {
         }
     `}</style>
             </div>
-
         );
-    };
-
-
-    const renderStockDetails = () => {
-        if (selectedStock) {
-            return (
-                <div className="mt-4">
-                    <h2>Stock Details</h2>
-                    <p>Symbol: {selectedStock.symbol}</p>
-                    <p>Identifier: {selectedStock.identifier}</p>
-                </div>
-            );
-        }
-        return null;
     };
 
     const indexOptions = [
@@ -178,7 +167,6 @@ const Market = () => {
         'NIFTY PSU BANK',
         'NIFTY PVT BANK'
     ];
-
     return (
         <div>
             <div className="container text-center mt-4">
@@ -192,7 +180,12 @@ const Market = () => {
                 </select>
             </div>
             {renderStockCards()}
-            {renderStockDetails()}
+            <Routes>
+                <Route path="/market/*">
+                    {selectedStock != null && <Route path=":indexName/:stockName" element={<StockDetail index={selectedIndex} stock={selectedStock} />} />}
+                </Route>
+            </Routes>
+
         </div>
     );
 };
