@@ -1,46 +1,28 @@
-import mongoose, { model } from 'mongoose';
-const { Schema } = mongoose;
-
-const transactionSchema = new Schema({
-    stockSymbol: {
-        type: String,
-        required: true,
-    },
-    transactionType: {
-        type: String, // 'buy' or 'sell'
-        required: true,
-    },
-    price: {
-        type: Number,
-        required: true,
-    },
-    quantity: {
-        type: Number,
-        required: true,
-    },
-    profitLoss: {
-        type: Number,
-    },
-    duration: {
-        type: String, // You can use a Date type to store the duration if needed
-    },
-    isOpen: {
-        type: Boolean,
-        default: true,
-    },
-    timestamp: {
-        type: Date,
-        default: Date.now,
-    },
-});
+import mongoose from 'mongoose';
+const { Schema, model } = mongoose;
 
 const portfolioSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        unique: true,
+        unique: true
     },
-    transactions: [transactionSchema],
+    openOrders: [{
+        type: Schema.Types.ObjectId,
+        ref: 'OpenOrder'
+    }],
+    closedOrders: [{
+        type: Schema.Types.ObjectId,
+        ref: 'ClosedOrder'
+    }],
+    currentBalance: {
+        type: Number,
+        default: 0
+    },
+    totalProfitLoss: {
+        type: Number,
+        default: 0
+    }
 });
 
 const Portfolio = model('Portfolio', portfolioSchema);

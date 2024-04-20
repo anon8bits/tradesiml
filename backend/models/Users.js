@@ -23,11 +23,6 @@ const userSchema = new Schema({
         type: Date,
         default: Date.now
     },
-    // Reference to Portfolio schema
-    portfolio: {
-        type: Schema.Types.ObjectId,
-        ref: 'Portfolio',
-    },
 });
 
 const User = model('User', userSchema);

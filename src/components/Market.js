@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import {Route, Routes, useNavigate } from 'react-router-dom';
 import StockDetail from './StockDetail.js';
-import { useStock } from './StockContext.js';
+import { useStock } from './context/StockContext.js';
 
 const Market = () => {
     const [stocks, setStocks] = useState([]);
@@ -46,8 +46,9 @@ const Market = () => {
 
     const handleClick = (stock) => {
         setSelectedStock(stock);
-        console.log('current stock: ' + selectedStock);
-        navigate(`/market/${selectedIndex}/${stock.symbol}`);
+        const indexWithoutSpaces = selectedIndex.replace(/\s/g, '');
+        const stockSymbolWithoutSpaces = stock.symbol.replace(/\s/g, '');
+        navigate(`/market/${indexWithoutSpaces}/${stockSymbolWithoutSpaces}`);
     };
 
     const handleIndexChange = (event) => {
