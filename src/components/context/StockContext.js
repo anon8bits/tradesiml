@@ -5,7 +5,7 @@ const StockContext = createContext();
 export const StockProvider = ({ children }) => {
   const [selectedIndex, setSelectedIndex] = useState(() => {
     const storedIndex = localStorage.getItem('selectedIndex');
-    return storedIndex !== null ? storedIndex : 'NIFTY 50';
+    return storedIndex !== null ? storedIndex : 'NIFTY-50';
   });
 
   const [selectedStock, setSelectedStock] = useState(() => {

@@ -1,22 +1,63 @@
-import { Schema, model } from 'mongoose';
+import mongoose, { model } from 'mongoose';
+const { Schema } = mongoose;
 
 const stockSchema = new Schema({
-  symbol: String,
-  identifier: String,
-  open: Number,
-  dayHigh: Number,
-  dayLow: Number,
-  lastPrice: Number,
-  previousClose: Number,
-  change: Number,
-  pChange: Number,
-  yearHigh: Number,
-  yearLow: Number,
-  totalTradedVolume: Number,
-  totalTradedValue: Number,
-  lastUpdateTime: String,
-  perChange365d: Number,
-  perChange30d: Number
+    symbol: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    indices: [{ type: String }],
+    identifier: {
+        type: String,
+    },
+    open: {
+        type: Number,
+        required: true
+    },
+    dayHigh: {
+        type: Number,
+    },
+    dayLow: {
+        type: Number,
+    },
+    lastPrice: {
+        type: Number,
+    },
+    previousClose: {
+        type: Number,
+    },
+    change: {
+        type: Number,
+    },
+    pChange: {
+        type: Number,
+    },
+    yearHigh: {
+        type: Number,
+    },
+    yearLow: {
+        type: Number,
+    },
+    totalTradedVolume: {
+        type: Number,
+    },
+    totalTradedValue: {
+        type: Number,
+    },
+    lastUpdateTime: {
+        type: Date,
+    },
+    perChange365d: {
+        type: Number,
+    },
+    perChange30d: {
+        type: Number,
+    }
 });
 
-export default model('Stock', stockSchema);
+
+const Stock = model('Stock', stockSchema);
+Stock.createIndexes();
+
+export default Stock;

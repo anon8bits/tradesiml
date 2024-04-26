@@ -9,6 +9,8 @@ import fetchuser from '../middlewares/fetchuser.js'
 const JWT_secret = "395539685e5fe9ef44a24c1e9f25b811"
 const { genSalt, hash, compare } = bcrypt;
 const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
+
+
 router.post('/createuser', [
   body('fname').notEmpty().withMessage('First name cannot be blank').isString().withMessage('Please enter a valid name'),
   body('lname').notEmpty().withMessage('Last name cannot be blank').isString().withMessage('Please enter a valid name'),

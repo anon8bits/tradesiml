@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {Route, Routes, useNavigate } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import StockDetail from './StockDetail.js';
 import { useStock } from './context/StockContext.js';
 
@@ -10,51 +10,33 @@ const Market = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const stocksPerPage = 20;
     const navigate = useNavigate();
-    const fetchData = async () => {
-        const options = {
-            method: 'GET',
-            url: 'https://latest-stock-price.p.rapidapi.com/price',
-            params: {
-                Indices: selectedIndex
-            },
-            headers: {
-                'X-RapidAPI-Key': '76849e1e22msh237b2a51eb428a7p141245jsn3fa09fb60d0d',
-                'X-RapidAPI-Host': 'latest-stock-price.p.rapidapi.com'
-            }
-        };
-
-        try {
-            const response = await axios.request(options);
-            setStocks(response.data);
-            localStorage.setItem(selectedIndex, JSON.stringify(response.data));
-        } catch (error) {
-            console.error(error);
-            alert("API currently down :( Please try again later");
-        }
-    };
 
     useEffect(() => {
-        const fetchStockData = async () => {
-            const data = await fetchData(selectedIndex);
-            if (data) {
-                setStocks(data);
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`http://localhost:5000/api/stocks/${selectedIndex}`);
+                setStocks(response.data);
+            } catch (error) {
+                console.error(error);
+                alert("Failed to fetch stock data. Please try again later.");
             }
         };
 
-        fetchStockData();
+        fetchData();
     }, [selectedIndex]);
 
     const handleClick = (stock) => {
         setSelectedStock(stock);
-        const indexWithoutSpaces = selectedIndex.replace(/\s/g, '');
         const stockSymbolWithoutSpaces = stock.symbol.replace(/\s/g, '');
-        navigate(`/market/${indexWithoutSpaces}/${stockSymbolWithoutSpaces}`);
+        navigate(`/market/${selectedIndex}/${stockSymbolWithoutSpaces}`);
     };
 
     const handleIndexChange = (event) => {
         setSelectedIndex(event.target.value);
         setCurrentPage(1);
+        console.log('Index: ', selectedIndex);
     };
+
 
     const renderStockCards = () => {
         const indexOfLastStock = currentPage * stocksPerPage;
@@ -142,31 +124,23 @@ const Market = () => {
     };
 
     const indexOptions = [
-        'NIFTY 50',
-        'NIFTY NEXT 50',
-        'NIFTY 100',
-        'NIFTY 200',
-        'NIFTY 500',
-        'NIFTY MIDCAP 50',
-        'NIFTY MIDCAP 100',
-        'NIFTY MIDCAP 150',
-        'NIFTY SMLCAP 50',
-        'NIFTY SMLCAP 100',
-        'NIFTY SMLCAP 250',
-        'NIFTY MIDSML 400',
-        'NIFTY BANK',
-        'NIFTY AUTO',
-        'NIFTY FINSRV25 50',
-        'NIFTY FIN SERVICE',
-        'NIFTY FMCG',
-        'NIFTY IT',
-        'NIFTY MEDIA',
-        'NIFTY METAL',
-        'NIFTY INFRA',
-        'NIFTY ENERGY',
-        'INFTY PHARMA',
-        'NIFTY PSU BANK',
-        'NIFTY PVT BANK'
+        'NIFTY-50',
+        'NIFTY-NEXT-50',
+        'NIFTY-MIDCAP-50',
+        'NIFTY-SMLCAP-50',
+        'NIFTY-BANK',
+        'NIFTY-AUTO',
+        'NIFTY-FINSRV25-50',
+        'NIFTY-FIN-SERVICE',
+        'NIFTY-FMCG',
+        'NIFTY-IT',
+        'NIFTY-MEDIA',
+        'NIFTY-METAL',
+        'NIFTY-INFRA',
+        'NIFTY-ENERGY',
+        'INFTY-PHARMA',
+        'NIFTY-PSU-BANK',
+        'NIFTY-PVT-BANK'
     ];
     return (
         <div>
