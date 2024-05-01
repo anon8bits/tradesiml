@@ -1,7 +1,8 @@
-// databaseLogic.js
-
 import axios from 'axios';
 import Stock from '../models/Stocks.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const indices = [
     'NIFTY 50',
@@ -25,23 +26,18 @@ const indices = [
 
 const fetchAndUpdateStockData = async (index) => {
     try {
-        const response = await axios.get('https://latest-stock-price.p.rapidapi.com/price', {
+        const response = await axios.get(`${process.env.RAPID_API_URL}/price`, {
             params: {
                 Indices: index
             },
             headers: {
-                'X-RapidAPI-Key': '76849e1e22msh237b2a51eb428a7p141245jsn3fa09fb60d0d',
-                'X-RapidAPI-Host': 'latest-stock-price.p.rapidapi.com'
+                'X-RapidAPI-Key': `${process.env.RAPID_API_KEY}`,
+                'X-RapidAPI-Host': `${process.env.RAPID_API_HOST}`
             }
         });
-
         const stocksData = response.data;
 
         for (const stock of stocksData) {
-
-            /* if (typeof stock.perChange365d === 'string') {
-                stock.perChange365d = parseFloat(stock.perChange365d);
-            } */
 
             for (const key in stock) {
                 if (typeof stock[key] === 'string' && !isNaN(stock[key])) {
@@ -50,16 +46,18 @@ const fetchAndUpdateStockData = async (index) => {
                         stock[key] = parsedValue;
                     }
                 }
-            }            
+            }
 
             const formattedIndex = index.replace(/\s+/g, '-');
+            const formattedSymbol = stock.symbol.replace(/\s+/g, '-');
 
-            const existingStock = await Stock.findOne({ symbol: stock.symbol });
+            const existingStock = await Stock.findOne({ symbol: formattedSymbol });
             let stockToUpdate = existingStock;
 
             if (!existingStock) {
                 stockToUpdate = new Stock({
                     ...stock,
+                    symbol: formattedSymbol,
                     index: formattedIndex,
                     lastUpdateTime: new Date(stock.lastUpdateTime)
                 });
@@ -76,7 +74,7 @@ const fetchAndUpdateStockData = async (index) => {
     } catch (error) {
       //  console.error(`Error updating stock data for ${index}:`, error);
     } finally {
-        await delay(5000);
+        await delay(2000);
     }
 };
 

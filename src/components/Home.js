@@ -8,13 +8,13 @@ import Image3 from '../assets/img/products/3.jpg';
 const Home = () => {
     return (
         <>
-            <header className="bg-dark">
+            <header className="bg-white">
                 <div className="container pt-4 pt-xl-5">
                     <div className="row pt-5">
                         <div className="col-md-8 col-xl-6 text-center text-md-start mx-auto">
                             <div className="text-center">
-                                <p className="fw-bold text-success mb-2">Start Learning Trading</p>
-                                <h1 className="fw-bold">The best way to learn the market is to jump into the market</h1>
+                                <h3 className="fw-bold text-success text-dark-green mb-2">Start Investing Today Without Risks</h3>
+                                <h1 className="fw-bold text-dark">The best way to learn the market is to jump into the market</h1>
                             </div>
                         </div>
                         <div className="col-12 col-lg-10 mx-auto">
@@ -33,12 +33,12 @@ const Home = () => {
                     </div>
                 </div>
             </header>
-            <section className="py-5"></section>
-            <section>
-                <div className="container bg-dark py-5">
+            <section className="py-5" style={{ backgroundColor: 'white' }}></section>
+            <section style={{ backgroundColor: 'white' }}>
+                <div className="container bg-white py-5">
                     <div className="row">
                         <div className="col-md-8 col-xl-6 text-center mx-auto">
-                            <p className="fw-bold text-success mb-2">Our Services</p>
+                            <h3 className="fw-bold text-success mb-2">Our Services</h3>
                             <h3 className="fw-bold">What we can do for you</h3>
                         </div>
                     </div>
@@ -46,19 +46,19 @@ const Home = () => {
                         <div className="row row-cols-1 row-cols-md-2 mx-auto align-items-stretch" style={{ maxWidth: '900px' }}>
                             <div className="col mb-5">
                                 <div className="card h-100 shadow-sm">
-                                    <div className="card-body px-4 py-5 px-md-5" style={{ marginBottom: '-2px' }}>
-                                        <h5 className="fw-bold card-title">Best Stocks Today</h5>
-                                        <p className="text-muted card-text mb-4">Look at the top gainers and losers in the market today</p>
-                                        <button className="btn btn-primary shadow" type="button">Market</button>
+                                    <div className="card-body d-flex flex-column justify-content-center align-items-center px-4 py-5 px-md-5" style={{ marginBottom: '-2px', backgroundColor: 'white', border: '1px solid #19F5AA', borderRadius: '10px' }}>
+                                        <h5 className="fw-bold card-title" style={{ color: 'black', marginBottom: '20px' }}>Invest Virtual Money</h5>
+                                        <p className="card-text mb-4" style={{ color: 'black', textAlign: 'center' }}>Master the stock market risk-free with our paper trading platform. Practice trading stocks in real-time, sharpening your skills before investing real money.</p>
+                                        <button className="btn btn-primary shadow" type="button" style={{ backgroundColor: '#19F5AA', borderColor: '#19F5AA', color: 'black' }}>Sign Up</button>
                                     </div>
                                 </div>
                             </div>
                             <div className="col mb-5">
                                 <div className="card h-100 shadow-sm">
-                                    <div className="card-body px-4 py-5 px-md-5">
-                                        <h5 className="fw-bold card-title">Portfolio Management</h5>
-                                        <p className="text-muted card-text mb-4">Watch all your investments at the same place and evaluate your performance</p>
-                                        <button className="btn btn-primary shadow" type="button">Your Portfolio</button>
+                                    <div className="card-body d-flex flex-column justify-content-center align-items-center px-4 py-5 px-md-5" style={{ marginBottom: '-2px', backgroundColor: 'white', border: '1px solid #19F5AA', borderRadius: '10px' }}>
+                                        <h5 className="fw-bold card-title" style={{ color: 'black', marginBottom: '20px' }}>Best Stocks Today</h5>
+                                        <p className="card-text mb-4" style={{ color: 'black', textAlign: 'center' }}>Explore today's market movers with ease. Discover top gainers and losers, empowering informed decisions for your trading strategies</p>
+                                        <button className="btn btn-primary shadow" type="button" style={{ backgroundColor: '#19F5AA', borderColor: '#19F5AA', color: 'black' }}>Market</button>
                                     </div>
                                 </div>
                             </div>
@@ -68,12 +68,12 @@ const Home = () => {
                 </div>
             </section>
             <section></section>
-            <section className="py-5">
+            <section className="py-5" >
                 <div className="container">
                     <div className="row mb-5">
                         <div className="col-md-8 col-xl-6 text-center mx-auto">
-                            <p className="fw-bold text-success mb-2">Feedback</p>
-                            <h2 className="fw-bold">Send your suggestions and feedback here</h2>
+                            <h4 className="fw-bold text-success mb-2">Feedback</h4>
+                            <h5 className="fw-bold" style={{ color: 'black' }}>Send your suggestions and feedback here</h5>
                         </div>
                     </div>
                     <div className="row d-flex justify-content-center">
@@ -83,7 +83,10 @@ const Home = () => {
                                     <div className="mb-3"><input className="form-control" type="text" id="name-1" name="name" placeholder="Name" /></div>
                                     <div className="mb-3"><input className="form-control" type="email" id="email-1" name="email" placeholder="Email" /></div>
                                     <div className="mb-3"><textarea className="form-control" id="message-1" name="message" rows="6" placeholder="Message"></textarea></div>
-                                    <div><button className="btn btn-primary shadow d-block w-100" type="submit">Send</button></div>
+                                    <div>
+                                        <button className="btn shadow d-block w-100" type="submit" style={{ backgroundColor: '#19F5AA' }}>Send</button>
+                                    </div>
+
                                 </form>
                             </div>
                         </div>
@@ -99,8 +102,8 @@ const Home = () => {
                                         </svg>
                                     </div>
                                     <div className="px-2">
-                                        <h6 className="fw-bold mb-0">Email</h6>
-                                        <p className="text-muted mb-0">priyanshukr19@gmail.com</p>
+                                        <h6 className="fw-bold mb-0" style={{ color: 'black' }}>Email</h6>
+                                        <p className=" mb-0" style={{ color: 'black' }}>priyanshukr19@gmail.com</p>
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center p-3"></div>
@@ -109,7 +112,7 @@ const Home = () => {
                     </div>
                 </div>
             </section>
-            <footer className="bg-dark">
+            {/* <footer className="bg-white">
                 <div className="container py-4 py-lg-5">
                     <footer>
                         <div className="row">
@@ -152,7 +155,7 @@ const Home = () => {
                         </div>
                     </footer>
                 </div>
-            </footer>
+            </footer> */}
             <hr />
             <div className="text-muted d-flex justify-content-between align-items-center pt-3">
                 <p className="mb-0">Copyright © 2023 TradeSiml</p>

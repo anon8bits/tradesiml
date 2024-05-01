@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Route, Routes, useNavigate } from 'react-router-dom';
-import StockDetail from './StockDetail.js';
-import { useStock } from './context/StockContext.js';
+import { useNavigate } from 'react-router-dom';
 
 const Market = () => {
     const [stocks, setStocks] = useState([]);
-    const { selectedIndex, selectedStock, setSelectedStock, setSelectedIndex } = useStock();
+    const [selectedIndex, setSelectedIndex] = useState('NIFTY-50');
+    const [selectedStock, setSelectedStock] = useState('NIFTY-50');
     const [currentPage, setCurrentPage] = useState(1);
     const stocksPerPage = 20;
     const navigate = useNavigate();
@@ -14,7 +13,7 @@ const Market = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/stocks/${selectedIndex}`);
+                const response = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/stocks/${selectedIndex}`);
                 setStocks(response.data);
             } catch (error) {
                 console.error(error);
@@ -26,9 +25,8 @@ const Market = () => {
     }, [selectedIndex]);
 
     const handleClick = (stock) => {
-        setSelectedStock(stock);
-        const stockSymbolWithoutSpaces = stock.symbol.replace(/\s/g, '');
-        navigate(`/market/${selectedIndex}/${stockSymbolWithoutSpaces}`);
+        setSelectedStock(stock.symbol);
+        navigate(`/market/${stock.symbol}`);
     };
 
     const handleIndexChange = (event) => {
@@ -58,22 +56,27 @@ const Market = () => {
         }
 
         return (
-            <div className="container mt-4">
+            <div className="container mt-4" style={{ backgroundColor: 'white' }}>
                 <div className="row">
                     {currentStocks.map((stock) => (
                         <div key={stock.symbol} className="col-md-4 mb-4">
-                            <div className="card" onClick={() => handleClick(stock)}>
-                                <div className="card-body">
-                                    <h5 className="card-title">{stock.symbol}</h5>
-                                    <p className="card-text">Last Price: ₹{stock.lastPrice}</p>
-                                    <p className="card-text">Change: {stock.change < 0 ? `- ₹ ${Math.abs(stock.change)}` : `₹ ${stock.change}`}</p>
+                            <div className="card" onClick={() => handleClick(stock)} style={{ border: '2px solid green', borderRadius: '10px', backgroundColor: 'white' }}>
+                                <div className="card-body" style={{ fontWeight: 'bold', textAlign: 'center', color: 'black', padding: '0.75rem' }}>
+                                    <div style={{ backgroundColor: '#19F5AA', color: 'white', borderRadius: '10px 10px 0 0', padding: '0.5rem 0', marginBottom: '0.5rem' }}>{stock.symbol}</div>
+                                    <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>Last Price: ₹{stock.lastPrice}</p>
+                                    <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>
+                                        Change: <span style={{ color: stock.change < 0 ? 'red' : 'green' }}>
+                                            {stock.change < 0 ? `- ₹ ${Math.abs(stock.change).toFixed(2)}` : `₹ ${stock.change.toFixed(2)}`}
+                                        </span>
+                                    </p>
+
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
-                <div className="pagination d-flex justify-content-center">
-                    <button onClick={() => { setCurrentPage(currentPage - 1); window.scrollTo(0, 0); }} disabled={currentPage === 1}>
+                <div className="pagination d-flex justify-content-center" style={{ marginBottom: '20px' }}>
+                    <button onClick={() => { setCurrentPage(currentPage - 1); window.scrollTo(0, 0); }} disabled={currentPage === 1} style={{ marginRight: '5px', backgroundColor: '#f0f0f0', border: 'none', padding: '5px 10px', borderRadius: '5px' }}>
                         Previous
                     </button>
                     <div className="page-numbers-container">
@@ -82,46 +85,27 @@ const Market = () => {
                                 key={number}
                                 onClick={() => { setCurrentPage(number); window.scrollTo(0, 0); }}
                                 className={currentPage === number ? 'active' : ''}
+                                style={{ fontWeight: 'bold', backgroundColor: currentPage === number ? '#19F5AA' : '#f0f0f0', color: currentPage === number ? 'white' : 'black', border: 'none', padding: '5px 10px', borderRadius: '5px', margin: '0 2px' }}
                             >
                                 {number}
                             </button>
                         ))}
                     </div>
-                    <button onClick={() => { setCurrentPage(currentPage + 1); window.scrollTo(0, 0); }} disabled={currentPage === totalPages}>
+                    <button onClick={() => { setCurrentPage(currentPage + 1); window.scrollTo(0, 0); }} disabled={currentPage === totalPages} style={{ marginLeft: '5px', backgroundColor: '#f0f0f0', border: 'none', padding: '5px 10px', borderRadius: '5px' }}>
                         Next
                     </button>
                 </div>
-                <style>{`
-        .pagination {
-            text-align: center;
-            margin-top: 20px; /* Adjust the margin as needed */
-        }
 
-        .pagination button {
-            margin: 0 5px;
-            padding: 5px 10px;
-            border: 1px solid #ccc;
-            cursor: pointer;
-        }
 
-        .page-numbers-container {
-            display: flex;
-            justify-content: center;
-        }
-
-        .pagination button.active {
-            background-color: #4caf50;
-            color: white;
-        }
-
-        .pagination button:disabled {
-            color: #aaa;
-            cursor: not-allowed;
-        }
-    `}</style>
             </div>
         );
     };
+
+
+
+
+
+
 
     const indexOptions = [
         'NIFTY-50',
@@ -143,7 +127,7 @@ const Market = () => {
         'NIFTY-PVT-BANK'
     ];
     return (
-        <div>
+        <div style={{ backgroundColor: 'white' }}>
             <div className="container text-center mt-4">
                 <h3>Select Stock Index</h3>
                 <select value={selectedIndex} onChange={handleIndexChange}>
@@ -155,12 +139,6 @@ const Market = () => {
                 </select>
             </div>
             {renderStockCards()}
-            <Routes>
-                <Route path="/market/*">
-                    {selectedStock != null && <Route path=":indexName/:stockName" element={<StockDetail index={selectedIndex} stock={selectedStock} />} />}
-                </Route>
-            </Routes>
-
         </div>
     );
 };

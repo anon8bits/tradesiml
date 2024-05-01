@@ -6,9 +6,8 @@ import Market from './components/Market.js';
 import Signup from './components/Signup.js';
 import Navbar from './components/Navbar.js';
 import StockDetail from './components/StockDetail.js';
-import { StockProvider } from './components/context/StockContext.js';
+import Order from './components/Order.js';
 import { OrderProvider } from './components/context/OrderContext.js';
-import Transaction from './components/Transaction.js';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -26,18 +25,16 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <ScrollToTop />
-        <StockProvider>
           <OrderProvider>
             <Routes>
               <Route exact="true" path='/' element={<Home />} />
               <Route exact="true" path='/login' element={<Login />} />
               <Route exact="true" path='/signup' element={<Signup />} />
               <Route exact="true" path='/market' element={<Market />} />
-              <Route exact="true" path="/market/:index/:symbol" element={<StockDetail />} />
-              <Route exact="true" path='/order' element={<Transaction />}></Route>
+              <Route exact="true" path="/market/:symbol" element={<StockDetail />} />
+              <Route exact="true" path='/order' element={< Order/>}  />
             </Routes>
           </OrderProvider>
-        </StockProvider>
       </BrowserRouter>
     </>
   );

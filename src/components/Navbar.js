@@ -15,7 +15,7 @@ function Navbar() {
         <nav className="navbar navbar-expand-md sticky-top py-3 navbar-dark" id="mainNav">
             <div className="container">
                 <NavLink className="navbar-brand d-flex align-items-center" to="/">
-                    Your Brand
+                    TradeSiml
                 </NavLink>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navcol-1">
                     <span className="visually-hidden">Toggle navigation</span>

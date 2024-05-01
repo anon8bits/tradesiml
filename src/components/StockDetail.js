@@ -1,69 +1,69 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useStock } from './context/StockContext.js';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './stockDetail.module.css';
-import { useOrder } from './context/OrderContext.js';
+import axios from 'axios';
+import Alert from './Alert.js';
 
 const StockDetail = () => {
-    const { selectedIndex, selectedStock: contextSelectedStock } = useStock();
-    // console.log('Index: ', selectedIndex)
-    // console.log('Stock: ', contextSelectedStock.symbol)
-    const [stockDetails, setStockDetails] = useState(null);
+    const { symbol } = useParams();
     const navigate = useNavigate();
-    const {symbol, setSymbol, price, setPrice}  = useOrder();
+    const [stockDetails, setStockDetails] = useState(null);
+
     useEffect(() => {
-        try {
-            const indexData = JSON.parse(localStorage.getItem(selectedIndex));
-            if (indexData) {    
-                const selectedStockFromLocalStorage = indexData.find(item => item.symbol === contextSelectedStock.symbol);
-                if (selectedStockFromLocalStorage) {
-                    setStockDetails(selectedStockFromLocalStorage);
-                } else {
-                    console.error("Selected stock not found in localStorage.");
-                }
-            } else {
-                console.error("Index data not found in localStorage.");
+        const fetchData = async () => {
+            try {
+                const response = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/stockDetail/${symbol}`);
+                setStockDetails(response.data);
+            } catch (error) {
+                console.error(error);
+                //alert("Failed to fetch stock data. Please try again later.");
             }
-        } catch (error) {
-            console.error("Error retrieving data from localStorage:", error);
+        };
+
+        fetchData();
+    }, [symbol]);
+
+    useEffect(() => {
+        if (stockDetails === null) {
+            const timeoutId = setTimeout(() => {
+                navigate('/market');
+            }, 2000);
+            return () => clearTimeout(timeoutId);
         }
-    }, [selectedIndex, contextSelectedStock]);
+    }, [stockDetails, navigate]);
 
     const handleClick = () => {
-        setSymbol(contextSelectedStock.symbol); 
-        setPrice(stockDetails.lastPrice);
-        navigate('/order');
+        navigate(`/order`, { state: { symbol: stockDetails.symbol, lastPrice: stockDetails.lastPrice } });
     };
-    
+
 
     return (
         <div>
+            {stockDetails === null && <Alert alert={{ type: 'danger', message: 'No stock data found. Redirecting back to Market...' }} />}
             {stockDetails !== null ? (
                 <div className={styles.container}>
                     <div className={styles.card}>
                         <div className={styles.content}>
                             <div className={styles.title}>{stockDetails.symbol}</div>
-                            <div className={styles.price}>Open: {stockDetails.open}</div>
-                            <div className={styles.price}>Day High: {stockDetails.dayHigh}</div>
-                            <div className={styles.price}>Day Low: {stockDetails.dayLow}</div>
-                            <div className={styles.price}>Last Price: {stockDetails.lastPrice}</div>
-                            <div className={styles.price}>Previous Close: {stockDetails.previousClose}</div>
-                            <div className={styles.price}>Change: {stockDetails.change}</div>
-                            <div className={styles.price}>% Change: {stockDetails.pChange}</div>
-                            <div className={styles.price}>Year High: {stockDetails.yearHigh}</div>
-                            <div className={styles.price}>Year Low: {stockDetails.yearLow}</div>
-                            <div className={styles.price}>Total Traded Volume: {stockDetails.totalTradedVolume}</div>
-                            <div className={styles.price}>Total Traded Value: {stockDetails.totalTradedValue}</div>
+                            <div className={styles.price}>Open: {stockDetails.open.toFixed(2)}</div>
+                            <div className={styles.price}>Day High: {stockDetails.dayHigh.toFixed(2)}</div>
+                            <div className={styles.price}>Day Low: {stockDetails.dayLow.toFixed(2)}</div>
+                            <div className={styles.price}>Last Price: {stockDetails.lastPrice.toFixed(2)}</div>
+                            <div className={styles.price}>Previous Close: {stockDetails.previousClose.toFixed(2)}</div>
+                            <div className={styles.price}>Change: {stockDetails.change.toFixed(2)}</div>
+                            <div className={styles.price}>% Change: {stockDetails.pChange.toFixed(2)}</div>
+                            <div className={styles.price}>Year High: {stockDetails.yearHigh.toFixed(2)}</div>
+                            <div className={styles.price}>Year Low: {stockDetails.yearLow.toFixed(2)}</div>
+                            <div className={styles.price}>Total Traded Volume: {stockDetails.totalTradedVolume.toFixed(2)}</div>
+                            <div className={styles.price}>Total Traded Value: {stockDetails.totalTradedValue.toFixed(2)}</div>
                             <div className={styles.price}>Last Update Time: {stockDetails.lastUpdateTime}</div>
-                            <div className={styles.price}>% Change (365 days): {stockDetails.perChange365d}</div>
-                            <div className={styles.price}>% Change (30 days): {stockDetails.perChange30d}</div>
+                            <div className={styles.price}>% Change (365 days): {stockDetails.perChange365d.toFixed(2)}</div>
+                            <div className={styles.price}>% Change (30 days): {stockDetails.perChange30d.toFixed(2)}</div>
                         </div>
-                        <button className={styles.button} onClick={handleClick}>Buy now</button>
+                        <button className={styles.button} onClick={handleClick}>Buy/Sell</button>
                     </div>
                 </div>
-            ) : (
-                <p>Loading...</p>
-            )}
+            ) : null}
         </div>
     );
 };
