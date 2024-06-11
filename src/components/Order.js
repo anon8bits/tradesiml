@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import styles from './Order.module.css'
+import React, { useState, useEffect, useContext } from 'react';
+import styles from './Order.module.css';
+import { StockContext } from './context/StockContext.js';
 
-const Order = ({ symbol, lastPrice }) => {
+const Order = () => {
   const [isLoading, setIsLoading] = useState(true);
-
+  const { symbol, lastPrice } = useContext(StockContext);
   useEffect(() => {
     if (symbol && lastPrice) {
       setIsLoading(false);
@@ -14,8 +15,6 @@ const Order = ({ symbol, lastPrice }) => {
   const [orderQuantity, setOrderQuantity] = useState('');
   const [targetPrice, setTargetPrice] = useState('');
   const [stopLoss, setStopLoss] = useState('');
-  console.log('Symbol = ', symbol);
-  console.log('Last Price = ', lastPrice);
   const handleSubmit = (e) => {
     e.preventDefault();
     // Handle order execution logic here
@@ -29,45 +28,62 @@ const Order = ({ symbol, lastPrice }) => {
   };
 
   return (
-    <div>
+    <div /* className={styles.container} */>
       {isLoading ? (
-        <button className="loader__btn">
-          <div className="loader"></div>
-          Loading ...
-        </button>
-
-      ) : (<>
-        <h2>Place Order for {symbol}</h2>
-        <form className={styles.form}>
-          <p className="title">Order Details</p>
-          <p className="message">Fill in the details to execute your order.</p>
-          <div className="flex">
-            <label>
-              <input required placeholder="" type="number" className="input" />
-              <span>Entry Price</span>
-            </label>
-
-            <label>
-              <input required placeholder="" type="number" className="input" />
-              <span>Order Quantity</span>
-            </label>
+        <div className={styles.container}>
+          <button className={styles.loader__btn}>
+            <div className={styles.loader}></div>
+            Loading ...
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className={styles.container}>
+            <h3 style={{ color: 'black' }}>Place Order for <b>{symbol}</b></h3>
           </div>
+          <div className={styles.formContainer}>
+            <form className={styles.form}>
+              <p className={styles.title}>Order Details</p>
+              <p className={styles.message} style={{ marginBottom: '5px' }}>Order type</p>
+              <div className={styles.switchContainer}>
+                <span className={styles.switchText}>Buy</span>
+                <label className={styles.switch}>
+                  <input type="checkbox" />
+                  <span className={styles.slider}></span>
+                </label>
+                <span className={styles.switchText}>    Sell</span>
+              </div>
+              <div className={styles.flex}>
+                <label>
+                  <input required placeholder="" type="number" className={styles.input} />
+                  <span>Entry Price</span>
+                </label>
 
-          <label>
-            <input required placeholder="" type="number" className="input" />
-            <span>Target Price</span>
-          </label>
+                <label>
+                  <input required placeholder="" type="number" className={styles.input} />
+                  <span>Order Quantity</span>
+                </label>
+              </div>
+              <div className={styles.flex}>
+                <label>
+                  <input required placeholder="" type="number" className={styles.input} />
+                  <span>Target Price</span>
+                </label>
 
-          <label>
-            <input required placeholder="" type="number" className="input" />
-            <span>Stop Loss</span>
-          </label>
-          <button className="submit">Execute Order</button>
-        </form>
-        <p className="signin">Already have an account? <a href="#">Sign in</a></p>
-      </>)}
-
-
+                <label>
+                  <input required placeholder="" type="number" className={styles.input} />
+                  <span>Stop Loss</span>
+                </label>
+              </div>
+              <label>
+                <input required placeholder="" type="number" className={styles.input} />
+                <span>Time Frame</span>
+              </label>
+              <button className={styles.submit} onClick={handleSubmit}>Execute Order</button>
+            </form>
+          </div>
+        </>
+      )}
     </div>
   );
 };

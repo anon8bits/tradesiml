@@ -7,7 +7,10 @@ import Signup from './components/Signup.js';
 import Navbar from './components/Navbar.js';
 import StockDetail from './components/StockDetail.js';
 import Order from './components/Order.js';
-import { OrderProvider } from './components/context/OrderContext.js';
+import Test from './components/Test.js';
+import { StockProvider } from './components/context/StockContext.js';
+import { AuthProvider } from './components/context/AuthContext.js';
+import PrivateRoute from './components/PrivateRoute.js';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -21,22 +24,29 @@ function ScrollToTop() {
 
 function App() {
   return (
-    <>
-      <BrowserRouter>
-        <Navbar />
-        <ScrollToTop />
-          <OrderProvider>
+    <AuthProvider>
+      <StockProvider>
+        <>
+          <BrowserRouter>
+            <Navbar />
+            <ScrollToTop />
             <Routes>
-              <Route exact="true" path='/' element={<Home />} />
-              <Route exact="true" path='/login' element={<Login />} />
-              <Route exact="true" path='/signup' element={<Signup />} />
-              <Route exact="true" path='/market' element={<Market />} />
-              <Route exact="true" path="/market/:symbol" element={<StockDetail />} />
-              <Route exact="true" path='/order' element={< Order/>}  />
+              <Route exact="true" path="/" element={<Home />} />
+              <Route exact="true" path="/login" element={<Login />} />
+              <Route exact="true" path="/signup" element={<Signup />} />
+              <Route exact="true" path="/market" element={<Market />} />
+              <Route
+                exact="true"
+                path="/market/:symbol"
+                element={<StockDetail />}
+              />
+              <Route path="/order" element={<PrivateRoute element={<Order />} />} />
+              <Route exact="true" path="/test" element={<Test />} />
             </Routes>
-          </OrderProvider>
-      </BrowserRouter>
-    </>
+          </BrowserRouter>
+        </>
+      </StockProvider>
+    </AuthProvider>
   );
 }
 

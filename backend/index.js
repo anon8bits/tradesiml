@@ -6,24 +6,24 @@ import fetchAndUpdateAllStockData from './routes/FetchStocks.js';
 import stockRoute from './routes/GetStocks.js'
 import StockDetailRoute from './routes/GetStockDetails.js';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 
-dotenv.config({path: '../.env'});
+dotenv.config({ path: '../.env' });
 connectToMongo();
 
 const app = express();
 const port = process.env.BACK_PORT;
 
 app.use(json());
-app.use(cors());
-
-app.use('/api/auth', authRoutes);
-app.use('/api/stocks', stockRoute);
-app.use('/api/stockDetail', StockDetailRoute);
-
+app.use(cookieParser());
 app.use(cors({
-  origin: `${process.env.CORS_ADD}`,
+  origin: process.env.CORS_ADD,
+  credentials: true,
   optionsSuccessStatus: 200,
 }));
+app.use('/api/auth', authRoutes);
+app.use('/api/stocks', stockRoute);
+app.use('/api/stockDetail', StockDetailRoute)
 
 //fetchAndUpdateAllStockData();
 

@@ -1,13 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './stockDetail.module.css';
 import axios from 'axios';
 import Alert from './Alert.js';
+import { StockContext } from './context/StockContext.js';
 
 const StockDetail = () => {
     const { symbol } = useParams();
     const navigate = useNavigate();
     const [stockDetails, setStockDetails] = useState(null);
+    const { handleStockSelection } = useContext(StockContext);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,7 +35,8 @@ const StockDetail = () => {
     }, [stockDetails, navigate]);
 
     const handleClick = () => {
-        navigate(`/order`, { state: { symbol: stockDetails.symbol, lastPrice: stockDetails.lastPrice } });
+        handleStockSelection(stockDetails.symbol, stockDetails.lastPrice);
+        navigate('/order');
     };
 
 

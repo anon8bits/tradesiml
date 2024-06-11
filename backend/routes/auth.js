@@ -6,7 +6,6 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken'
 import fetchuser from '../middlewares/fetchuser.js'
 
-const JWT_secret = "395539685e5fe9ef44a24c1e9f25b811"
 const { genSalt, hash, compare } = bcrypt;
 const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
 
@@ -21,7 +20,7 @@ router.post('/createuser', [
     .withMessage('Password must contain at least one uppercase letter, one number, and one symbol')
 ], async (req, res) => {
   const result = validationResult(req);
-  if (!result.isEmpty()) {  
+  if (!result.isEmpty()) {
     return res.status(400).json({ errors: result.array() });
   }
 
@@ -47,7 +46,7 @@ router.post('/createuser', [
       },
     };
 
-    const authtoken = jwt.sign(data, JWT_secret);
+    const authtoken = jwt.sign(data, process.env.JWT_secret);
     res.json({ authtoken });
   } catch (error) {
     console.error(error.message);
@@ -78,23 +77,28 @@ router.post('/login', [
         id: user.id
       }
     }
-    const authtoken = jwt.sign(data, JWT_secret);
-    res.json({ authtoken });
+    const authtoken = jwt.sign(data, process.env.JWT_secret);
+    res.cookie('authtoken', authtoken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
+    res.status(200).json({ message: 'Login successful' });
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Some error occured");
+    res.status(500).send("Some error occurred");
   }
-})
+});
 
 router.post('/getuser', fetchuser, async (req, res) => {
   try {
     const userId = req.user.id;
     const user = await User.findById(userId).select("-password")
-    res.send(user)
+    res.send(user);
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occured");
   }
-})
+});
 
 export default router;

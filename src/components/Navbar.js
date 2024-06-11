@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
+import { AuthContext } from './context/AuthContext.js';
 
 function Navbar() {
+    const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem('authtoken');
+        Cookies.remove('authtoken');  
+        setIsAuthenticated(false);
         navigate('/login', { replace: true });
     };
-
-    const isAuthenticated = !!localStorage.getItem('authtoken');
 
     return (
         <nav className="navbar navbar-expand-md sticky-top py-3 navbar-dark" id="mainNav">
@@ -24,22 +26,22 @@ function Navbar() {
                 <div className="collapse navbar-collapse" id="navcol-1">
                     <ul className="navbar-nav me-auto">
                         <li className="nav-item">
-                            <NavLink exact="true" className="nav-link" activeclassname="active" to="/">
+                            <NavLink exact="true" className="nav-link" to="/">
                                 Home
                             </NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink className="nav-link" activeclassname="active" to="/market">
+                            <NavLink className="nav-link" to="/market">
                                 Market
                             </NavLink>
                         </li>
                     </ul>
                     <ul className="navbar-nav">
-                        {isAuthenticated && (
+                        {isAuthenticated ? (
                             <li className="nav-item dropdown">
                                 <a
                                     className="nav-link dropdown-toggle"
-                                    href="#"
+                                    href="#!"
                                     id="navbarDropdown"
                                     role="button"
                                     data-bs-toggle="dropdown"
@@ -64,8 +66,7 @@ function Navbar() {
                                     </button>
                                 </div>
                             </li>
-                        )}
-                        {isAuthenticated || (
+                        ) : (
                             <>
                                 <li className="nav-item">
                                     <NavLink className="btn btn-primary shadow" role="button" to="/signup">

@@ -1,11 +1,16 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import Alert from './Alert.js';
+import { AuthContext } from './context/AuthContext.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from './redux/authSlice.js';
+
 const Login = () => {
     const [alert, setAlert] = useState(null);
     const navigate = useNavigate();
+    const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
     const closeAlert = () => {
-        setAlert(null); // Set alert to null to remove the alert
+        setAlert(null);
     };
     const [formData, setFormData] = useState({
         email: '',
@@ -24,7 +29,7 @@ const Login = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:5000/api/auth/login', {
+            const response = await fetch(`${process.env.REACT_APP_BACK_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,24 +37,24 @@ const Login = () => {
                 body: JSON.stringify(formData),
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                localStorage.setItem('authtoken', data.authtoken); // Store the token in localStorage
+            if (response.status == 200) {
                 navigate('/market');
-                // Optionally, you can perform additional actions for a successful login
             } else {
                 if (response.status === 400) {
                     setAlert({
                         type: 'danger',
                         message: 'Please login with correct credentials',
                     });
+                } else {
+                    console.error('Login error:', response.statusText);
                 }
             }
         } catch (error) {
             console.error('Error during login:', error.message || 'Network error');
         }
     };
+
+
     return (
         <>
             <Alert alert={alert} closeAlert={closeAlert} />
@@ -57,8 +62,7 @@ const Login = () => {
                 <div className="container py-5">
                     <div className="row mb-4 mb-lg-5">
                         <div className="col-md-8 col-xl-6 text-center mx-auto">
-                            <p className="fw-bold text-success mb-2">Login</p>
-                            <h2 className="fw-bold">Welcome</h2>
+                            <h2 className="fw-bold text-success mb-2">Login</h2>
                         </div>
                     </div>
                     <div className="row d-flex justify-content-center">
