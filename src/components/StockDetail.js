@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import styles from './stockDetail.module.css';
+import styles from './css/stockDetail.module.css';
 import axios from 'axios';
 import Alert from './Alert.js';
 import { StockContext } from './context/StockContext.js';

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import styles from './Order.module.css';
+import styles from './css/Order.module.css';
 import { StockContext } from './context/StockContext.js';
 
 const Order = () => {

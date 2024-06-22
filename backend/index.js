@@ -1,4 +1,4 @@
-import connectToMongo from './database.js';
+import connectDB from './database.js';
 import express, { json } from 'express';
 import authRoutes from './routes/auth.js';
 import cors from 'cors';
@@ -9,10 +9,11 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
 dotenv.config({ path: '../.env' });
-connectToMongo();
+connectDB();
 
 const app = express();
 const port = process.env.BACK_PORT;
+
 
 app.use(json());
 app.use(cookieParser());
@@ -21,11 +22,11 @@ app.use(cors({
   credentials: true,
   optionsSuccessStatus: 200,
 }));
-app.use('/api/auth', authRoutes);
+ app.use('/api/auth', authRoutes);
 app.use('/api/stocks', stockRoute);
 app.use('/api/stockDetail', StockDetailRoute)
 
-//fetchAndUpdateAllStockData();
+fetchAndUpdateAllStockData();
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

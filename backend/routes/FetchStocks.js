@@ -1,80 +1,63 @@
 import axios from 'axios';
 import Stock from '../models/Stocks.js';
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
 
-dotenv.config();
+dotenv.config({ path: '../.env' });
 
-const indices = [
-    'NIFTY 50',
-    'NIFTY NEXT 50',
-    'NIFTY MIDCAP 50',
-    'NIFTY SMLCAP 50',
-    'NIFTY BANK',
-    'NIFTY AUTO',
-    'NIFTY FINSRV25 50',
-    'NIFTY FIN SERVICE',
-    'NIFTY FMCG',
-    'NIFTY IT',
-    'NIFTY MEDIA',
-    'NIFTY METAL',
-    'NIFTY INFRA',
-    'NIFTY ENERGY',
-    'INFTY PHARMA',
-    'NIFTY PSU BANK',
-    'NIFTY PVT BANK'
+const indicies = [
+    'NIFTY', 'BANKNIFTY', 'NIFTYOIL', 'NIFTYPVTBANK', 'NIFTYM50', 'NSEQ30'
 ];
 
 const fetchAndUpdateStockData = async (index) => {
     try {
-        const response = await axios.get(`${process.env.RAPID_API_URL}/price`, {
+        const response = await axios.get(`${process.env.RAPID_API_URL}`, {
             params: {
-                Indices: index
+                Indicies: index
             },
             headers: {
-                'X-RapidAPI-Key': `${process.env.RAPID_API_KEY}`,
-                'X-RapidAPI-Host': `${process.env.RAPID_API_HOST}`
+                'x-rapidapi-key': `${process.env.RAPID_API_KEY}`,
+                'x-rapidapi-host': `${process.env.RAPID_API_HOST}`
             }
         });
         const stocksData = response.data;
+        // console.log('Stocks data: ', stocksData);
 
         for (const stock of stocksData) {
+            if (!stock.ISIN || typeof stock.ISIN !== 'string') continue;
+            const filter = { ISIN: stock.ISIN };
+            const update = {
+                Symbol: stock.Symbol,
+                DateTime: new Date(stock['Date/Time']),
+                TotalVolume: stock['Total Volume'],
+                NetChange: stock['Net Change'],
+                LTP: stock.LTP,
+                Volume: stock.Volume,
+                High: stock.High,
+                Low: stock.Low,
+                Open: stock.Open,
+                PClose: stock['P Close'],
+                Name: stock.Name,
+                Week52High: stock['52Wk High'],
+                Week52Low: stock['52Wk Low'],
+                Year5High: stock['5Year High'],
+                ISIN: stock.ISIN,
+                Month1High: stock['1M High'],
+                Month3High: stock['3M High'],
+                Month6High: stock['6M High'],
+                PercentChange: stock['%Chng'],
+                $addToSet: { Index: index }
+            };
 
-            for (const key in stock) {
-                if (typeof stock[key] === 'string' && !isNaN(stock[key])) {
-                    const parsedValue = parseFloat(stock[key]);
-                    if (!isNaN(parsedValue)) {
-                        stock[key] = parsedValue;
-                    }
-                }
-            }
-
-            const formattedIndex = index.replace(/\s+/g, '-');
-            const formattedSymbol = stock.symbol.replace(/\s+/g, '-');
-
-            const existingStock = await Stock.findOne({ symbol: formattedSymbol });
-            let stockToUpdate = existingStock;
-
-            if (!existingStock) {
-                stockToUpdate = new Stock({
-                    ...stock,
-                    symbol: formattedSymbol,
-                    index: formattedIndex,
-                    lastUpdateTime: new Date(stock.lastUpdateTime)
-                });
-
-            } else {
-                if (!existingStock.indices.includes(formattedIndex)) {
-                    existingStock.indices.push(formattedIndex);
-                    await existingStock.save();
-                }
-            }
-            await stockToUpdate.save();
+            await Stock.findOneAndUpdate(filter, update, {
+                upsert: true,
+                new: true,
+                setDefaultsOnInsert: true,
+                runValidators: true
+            });
         }
 
     } catch (error) {
-      //  console.error(`Error updating stock data for ${index}:`, error);
-    } finally {
-        await delay(2000);
+        console.error(`Error updating stock data for ${index}:`, error);
     }
 };
 
@@ -83,12 +66,20 @@ const delay = (ms) => {
 };
 
 const fetchAndUpdateAllStockData = async () => {
-    for (const index of indices) {
-        await fetchAndUpdateStockData(index);
+    const now = new Date();
+    const startTime = new Date();
+    startTime.setHours(9, 15, 0); // 9:15 AM IST
+    const endTime = new Date();
+    endTime.setHours(15, 45, 0); // 3:45 PM IST
+    if (now >= startTime && now <= endTime) {
+        for (const index of indicies) {
+            await fetchAndUpdateStockData(index);
+            await delay(1000);
+        }
     }
 };
 
 fetchAndUpdateAllStockData();
-setInterval(fetchAndUpdateAllStockData, 10 * 60 * 1000);
+setInterval(fetchAndUpdateAllStockData, 5 * 60 * 1000);
 
 export default fetchAndUpdateAllStockData;

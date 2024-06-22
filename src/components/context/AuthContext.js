@@ -1,29 +1,30 @@
 import React, { createContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import { getAuthToken, isTokenValid } from '../utils/auth.js';
 
-export const AuthContext = createContext({
-  authState: { isAuthenticated: false, user: null },
-  setAuthState: () => {},
-});
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [authState, setAuthState] = useState({ isAuthenticated: false, user: null });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/auth/getuser`, {}, { withCredentials: true });
-        setAuthState({ isAuthenticated: response.data.isAuthenticated, user: response.data.user });
-      } catch (error) {
-        setAuthState({ isAuthenticated: false, user: null });
-      }
-    };
-    checkAuth();
+    const token = getAuthToken();
+    if (token && isTokenValid(token)) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+    setLoading(false);
   }, []);
 
+  console.log('AUth = ', isAuthenticated);
+
   return (
-    <AuthContext.Provider value={{ authState, setAuthState }}>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export {AuthContext};
+export default AuthContext;

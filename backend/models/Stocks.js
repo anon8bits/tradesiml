@@ -1,63 +1,30 @@
 import mongoose, { model } from 'mongoose';
-const { Schema } = mongoose;
+const Schema = mongoose.Schema;
 
 const stockSchema = new Schema({
-    symbol: {
-        type: String,
-        required: true,
-        unique: true
-    },
-    indices: [{ type: String }],
-    identifier: {
-        type: String,
-    },
-    open: {
-        type: Number,
-        required: true
-    },
-    dayHigh: {
-        type: Number,
-    },
-    dayLow: {
-        type: Number,
-    },
-    lastPrice: {
-        type: Number,
-    },
-    previousClose: {
-        type: Number,
-    },
-    change: {
-        type: Number,
-    },
-    pChange: {
-        type: Number,
-    },
-    yearHigh: {
-        type: Number,
-    },
-    yearLow: {
-        type: Number,
-    },
-    totalTradedVolume: {
-        type: Number,
-    },
-    totalTradedValue: {
-        type: Number,
-    },
-    lastUpdateTime: {
-        type: Date,
-    },
-    perChange365d: {
-        type: Number,
-    },
-    perChange30d: {
-        type: Number,
-    }
+    ISIN: { type: String, required: true, unique: true },
+    Symbol: { type: String, required: true, unique: false },
+    Index: { type: [String], required: true },
+    DateTime: { type: Date },
+    TotalVolume: { type: Number },
+    NetChange: { type: Number },
+    LTP: { type: Number, required: true },
+    Volume: { type: Number },
+    High: { type: Number },
+    Low: { type: Number },
+    Open: { type: Number },
+    PClose: { type: Number },
+    Name: { type: String, required: true },
+    Week52High: { type: Number },
+    Week52Low: { type: Number },
+    Year5High: { type: Number },
+    Month1High: { type: Number },
+    Month3High: { type: Number },
+    Month6High: { type: Number },
+    PercentChange: { type: Number, required: true }
 });
 
+stockSchema.index({ ISIN: 1 }, { unique: true });
 
 const Stock = model('Stock', stockSchema);
-Stock.createIndexes();
-
 export default Stock;

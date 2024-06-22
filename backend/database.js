@@ -1,15 +1,19 @@
-import { connect } from 'mongoose';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 
-const mongoURI = "mongodb://0.0.0.0:27017/tradesiml";
+dotenv.config();
 
-const connectToMongo = () => {
-  connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-    .catch((error) => {
-      console.error('Error connecting to MongoDB:', error);
+const connectDB = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
     });
-}
+    console.log('MongoDB connected successfully');
+  } catch (error) {
+    console.error('MongoDB connection failed:', error.message);
+    process.exit(1);
+  }
+};
 
-export default connectToMongo;
+export default connectDB;

@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router-dom';
 
 const Market = () => {
     const [stocks, setStocks] = useState([]);
-    const [selectedIndex, setSelectedIndex] = useState('NIFTY-50');
-    const [selectedStock, setSelectedStock] = useState('NIFTY-50');
+    const [selectedIndex, setSelectedIndex] = useState('NIFTY');
+    const [selectedStock, setSelectedStock] = useState('NIFTY');
     const [currentPage, setCurrentPage] = useState(1);
-    const stocksPerPage = 20;
+    const stocksPerPage = 21;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -62,11 +62,11 @@ const Market = () => {
                         <div key={stock.symbol} className="col-md-4 mb-4">
                             <div className="card" onClick={() => handleClick(stock)} style={{ border: '2px solid green', borderRadius: '10px', backgroundColor: 'white' }}>
                                 <div className="card-body" style={{ fontWeight: 'bold', textAlign: 'center', color: 'black', padding: '0.75rem' }}>
-                                    <div style={{ backgroundColor: '#19F5AA', color: 'white', borderRadius: '10px 10px 0 0', padding: '0.5rem 0', marginBottom: '0.5rem' }}>{stock.symbol}</div>
-                                    <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>Last Price: ₹{stock.lastPrice}</p>
+                                    <div style={{ backgroundColor: '#19F5AA', color: 'white', borderRadius: '10px 10px 0 0', padding: '0.5rem 0', marginBottom: '0.5rem' }}>{stock.Symbol}</div>
+                                    <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>Last Price: ₹{stock.LTP}</p>
                                     <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>
-                                        Change: <span style={{ color: stock.change < 0 ? 'red' : 'green' }}>
-                                            {stock.change < 0 ? `- ₹ ${Math.abs(stock.change).toFixed(2)}` : `₹ ${stock.change.toFixed(2)}`}
+                                        Change: <span style={{ color: stock.NetChange < 0 ? 'red' : 'green' }}>
+                                            {stock.NetChange < 0 ? `- ₹ ${Math.abs(stock.NetChange)}` : `₹ ${stock.NetChange}`}
                                         </span>
                                     </p>
 
@@ -76,7 +76,12 @@ const Market = () => {
                     ))}
                 </div>
                 <div className="pagination d-flex justify-content-center" style={{ marginBottom: '20px' }}>
-                    <button onClick={() => { setCurrentPage(currentPage - 1); window.scrollTo(0, 0); }} disabled={currentPage === 1} style={{ marginRight: '5px', backgroundColor: '#f0f0f0', border: 'none', padding: '5px 10px', borderRadius: '5px' }}>
+                    <button
+                        key="prev"
+                        onClick={() => { setCurrentPage(currentPage - 1); window.scrollTo(0, 0); }}
+                        disabled={currentPage === 1}
+                        style={{ marginRight: '5px', backgroundColor: '#f0f0f0', border: 'none', padding: '5px 10px', borderRadius: '5px' }}
+                    >
                         Previous
                     </button>
                     <div className="page-numbers-container">
@@ -91,10 +96,16 @@ const Market = () => {
                             </button>
                         ))}
                     </div>
-                    <button onClick={() => { setCurrentPage(currentPage + 1); window.scrollTo(0, 0); }} disabled={currentPage === totalPages} style={{ marginLeft: '5px', backgroundColor: '#f0f0f0', border: 'none', padding: '5px 10px', borderRadius: '5px' }}>
+                    <button
+                        key="next"
+                        onClick={() => { setCurrentPage(currentPage + 1); window.scrollTo(0, 0); }}
+                        disabled={currentPage === totalPages}
+                        style={{ marginLeft: '5px', backgroundColor: '#f0f0f0', border: 'none', padding: '5px 10px', borderRadius: '5px' }}
+                    >
                         Next
                     </button>
                 </div>
+
 
 
             </div>
@@ -108,23 +119,7 @@ const Market = () => {
 
 
     const indexOptions = [
-        'NIFTY-50',
-        'NIFTY-NEXT-50',
-        'NIFTY-MIDCAP-50',
-        'NIFTY-SMLCAP-50',
-        'NIFTY-BANK',
-        'NIFTY-AUTO',
-        'NIFTY-FINSRV25-50',
-        'NIFTY-FIN-SERVICE',
-        'NIFTY-FMCG',
-        'NIFTY-IT',
-        'NIFTY-MEDIA',
-        'NIFTY-METAL',
-        'NIFTY-INFRA',
-        'NIFTY-ENERGY',
-        'INFTY-PHARMA',
-        'NIFTY-PSU-BANK',
-        'NIFTY-PVT-BANK'
+        'NIFTY', 'BANKNIFTY', 'NIFTYOIL', 'NIFTYPVTBANK', 'NIFTYM50', 'NSEQ30'
     ];
     return (
         <div style={{ backgroundColor: 'white' }}>

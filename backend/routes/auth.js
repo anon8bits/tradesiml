@@ -1,14 +1,17 @@
-import { Router } from 'express'
-const router = Router()
+import { Router } from 'express';
+const router = Router();
 import User from '../models/Users.js';
-import { body, validationResult } from 'express-validator'
+import { body, validationResult } from 'express-validator';
 import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken'
-import fetchuser from '../middlewares/fetchuser.js'
+import jwt from 'jsonwebtoken';
+import fetchuser from '../middlewares/fetchuser.js';
 
 const { genSalt, hash, compare } = bcrypt;
 const passwordRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
 
+const generateAccessToken = (user) => {
+  return jwt.sign({ user: { id: user.id } }, process.env.JWT_SECRET, { expiresIn: '7d' });
+};
 
 router.post('/createuser', [
   body('fname').notEmpty().withMessage('First name cannot be blank').isString().withMessage('Please enter a valid name'),
@@ -30,30 +33,18 @@ router.post('/createuser', [
       return res.status(400).json({ error: "This email is already in use." });
     }
 
-    const salt = await genSalt(10);
-    const hashedPassword = await hash(req.body.password, salt);
-
     const user = await User.create({
       fname: req.body.fname,
       lname: req.body.lname,
       email: req.body.email,
-      password: hashedPassword,
     });
+    res.status(200).json("User added");
 
-    const data = {
-      user: {
-        id: user.id,
-      },
-    };
-
-    const authtoken = jwt.sign(data, process.env.JWT_secret);
-    res.json({ authtoken });
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occurred");
   }
 });
-
 
 router.post('/login', [
   body('email', 'Please enter a valid email').isEmail(),
@@ -72,18 +63,17 @@ router.post('/login', [
     if (!passwordCompare) {
       return res.status(400).json({ error: "Please try to login with correct credentials" });
     }
-    const data = {
-      user: {
-        id: user.id
-      }
-    }
-    const authtoken = jwt.sign(data, process.env.JWT_secret);
-    res.cookie('authtoken', authtoken, {
+
+    const accessToken = generateAccessToken(user);
+
+    res.cookie('accessToken', accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
+      sameSite: 'strict',
     });
+
     res.status(200).json({ message: 'Login successful' });
+
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Some error occurred");
@@ -92,12 +82,11 @@ router.post('/login', [
 
 router.post('/getuser', fetchuser, async (req, res) => {
   try {
-    const userId = req.user.id;
-    const user = await User.findById(userId).select("-password")
-    res.send(user);
+    const user = await User.findById(req.user.id).select('-password');
+    res.json(user);
   } catch (error) {
     console.error(error.message);
-    res.status(500).send("Some error occured");
+    res.status(500).send("Internal server error");
   }
 });
 
