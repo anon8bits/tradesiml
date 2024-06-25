@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
 const openOrderSchema = new Schema({
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
+    userEmail: {
+        type: String,
+        ref: 'user',
         required: true
     },
     stockName: {
@@ -14,10 +14,6 @@ const openOrderSchema = new Schema({
     entryPrice: {
         type: Number,
         required: false
-    },
-    tradePrice: {
-        type: Number,
-        required: true
     },
     orderQuantity: {
         type: Number,
@@ -36,9 +32,20 @@ const openOrderSchema = new Schema({
         required: true,
         default: () => Date.now() + 24 * 60 * 60 * 1000
     },
-    status: {
+    type: {
         type: String,
-        default: 'Active'
+    },
+    orderStartTime: {
+        type: Date,
+        required: true,
+        default: Date.now()
+    },
+    triggered : {
+        type: Boolean,
+        required: true
+    },
+    PL : {
+        type: Number
     }
 });
 

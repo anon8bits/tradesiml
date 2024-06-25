@@ -1,0 +1,62 @@
+.book {
+    position: relative;
+    border-radius: 10px;
+    width: 300px;
+    /* Increased from 220px */
+    height: 400px;
+    /* Increased from 300px for more content */
+    background-color: whitesmoke;
+    box-shadow: 1px 1px 12px #000;
+    transform: preserve-3d;
+    perspective: 2000px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    margin: 20px auto;
+}
+
+.cover {
+    top: 0;
+    position: absolute;
+    background-color: lightgray;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.5s;
+    transform-origin: 0;
+    box-shadow: 1px 1px 12px #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.book:hover .cover {
+    transition: all 0.5s;
+    transform: rotatey(-100deg);
+    /* Increased from -80deg for fuller opening */
+}
+
+.coverContent {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.details {
+    padding: 20px;
+    font-size: 14px;
+    position: absolute;
+    left: 50px;
+    /* Shift details to the right */
+    width: calc(100% - 50px);
+    /* Adjust width to account for left shift */
+}
+
+.details p {
+    margin: 8px 0;
+}

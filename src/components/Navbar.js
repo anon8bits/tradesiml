@@ -89,7 +89,7 @@ const NavBar = () => {
                                             width="50"
                                         />
                                     </DropdownToggle>
-                                    <DropdownMenu right>
+                                    <DropdownMenu end>
                                         <DropdownItem header>{user.name}</DropdownItem>
                                         <DropdownItem
                                             tag={RouterNavLink}
@@ -98,6 +98,14 @@ const NavBar = () => {
                                             activeclassname="router-link-exact-active"
                                         >
                                             <FontAwesomeIcon icon="user" className="mr-3" /> Profile
+                                        </DropdownItem>
+                                        <DropdownItem
+                                            tag={RouterNavLink}
+                                            to="/portfolio"
+                                            className="dropdown-portfolio"
+                                            activeclassname="router-link-exact-active"
+                                        >
+                                            <FontAwesomeIcon icon="fa-solid fa-money-bill-trend-up" className="mr-3" /> Portfolio
                                         </DropdownItem>
                                         <DropdownItem
                                             id="qsLogoutBtn"

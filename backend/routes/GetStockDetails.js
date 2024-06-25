@@ -3,13 +3,13 @@ import Stock from "../models/Stocks.js";
 
 const router = Router();
 
-router.get('/:stock', async (req, res) => {
-    const {stock} = req.params;
+router.get('/:Symbol', async (req, res) => {
+    const {Symbol} = req.params;
     try {
-        const data = await Stock.findOne({symbol: stock});
+        const data = await Stock.findOne({Symbol : Symbol});
         res.json(data);
     } catch (error) {
-        console.log('Error getting data for stock: ', stock);
+        console.log('Error getting data for stock: ', Symbol);
         res.status(500).json({ error: 'Internal server error' });
     }
 });

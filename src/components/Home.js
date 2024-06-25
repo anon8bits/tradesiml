@@ -156,10 +156,6 @@ const Home = () => {
                     </footer>
                 </div>
             </footer> */}
-            <hr />
-            <div className="text-muted d-flex justify-content-between align-items-center pt-3">
-                <p className="mb-0">Copyright © 2023 TradeSiml</p>
-            </div>
             <script src="assets/bootstrap/js/bootstrap.min.js" />
             <script src="assets/js/bs-init.js" />
             <script src="assets/js/bold-and-dark.js" />

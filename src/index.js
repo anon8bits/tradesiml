@@ -4,6 +4,10 @@ import './index.css';
 import { Auth0Provider } from '@auth0/auth0-react';
 import App from './App.js';
 import reportWebVitals from './reportWebVitals.js';
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faUser, faPowerOff } from '@fortawesome/free-solid-svg-icons';
+
+library.add(faUser, faPowerOff);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

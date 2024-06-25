@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
-import Alert from './Alert.js';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -45,7 +44,7 @@ const Signup = () => {
             type: 'danger',
             message: 'Please enter your last name'
           });
-        }else if (data.errors[0].path === 'email') {
+        } else if (data.errors[0].path === 'email') {
           setAlert({
             type: 'danger',
             message: 'Please enter a valid email'
@@ -69,7 +68,6 @@ const Signup = () => {
 
   return (
     <>
-      <Alert alert={alert} closeAlert={setAlert} />
       <section className="py-5">
         <div className="container py-5">
           <div className="row mb-4 mb-lg-5">

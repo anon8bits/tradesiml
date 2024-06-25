@@ -1,10 +1,13 @@
 import connectDB from './database.js';
 import express, { json } from 'express';
 import authRoutes from './routes/auth.js';
+import orderRoute from './routes/ExecuteOrder.js'
 import cors from 'cors';
 import fetchAndUpdateAllStockData from './routes/FetchStocks.js';
+import userDetails from './routes/UserDetails.js'
 import stockRoute from './routes/GetStocks.js'
 import StockDetailRoute from './routes/GetStockDetails.js';
+import FetchOpenOrders from './routes/FetchOpenOrders.js'
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
@@ -22,11 +25,14 @@ app.use(cors({
   credentials: true,
   optionsSuccessStatus: 200,
 }));
- app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/order', orderRoute);
 app.use('/api/stocks', stockRoute);
-app.use('/api/stockDetail', StockDetailRoute)
+app.use('/api/stockDetail', StockDetailRoute);
+app.use('/api/fetchOpenOrders', FetchOpenOrders);
+app.use('/api/getUser', userDetails);
 
-fetchAndUpdateAllStockData();
+//fetchAndUpdateAllStockData();
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

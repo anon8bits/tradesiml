@@ -110,15 +110,17 @@
   font-size: 0.9em;
 }
 
-.form label .input:focus+span,
-.form label .input:valid+span {
+.form label .input:focus+span {
   top: 30px;
   font-size: 0.7em;
   font-weight: 600;
 }
 
 .form label .input:valid+span {
-  color: green;
+  top: 30px;
+  font-size: 0.7em;
+  font-weight: 600;
+  color: grey;
 }
 
 .submit {
@@ -260,4 +262,15 @@ input:checked+.slider:before {
   margin-left: 10px;
   color: black;
   font-weight: bold;
+}
+
+.input[type="number"]::-webkit-inner-spin-button,
+.input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove spinner for Firefox */
+.input[type="number"] {
+  -moz-appearance: textfield;
 }

@@ -1,29 +1,33 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styles from './css/stockDetail.module.css';
 import axios from 'axios';
-import Alert from './Alert.js';
+import CustomAlert from './CustomAlert.js';
 import { StockContext } from './context/StockContext.js';
+import { useAuth0 } from '@auth0/auth0-react';
 
 const StockDetail = () => {
-    const { symbol } = useParams();
+    const { Symbol } = useParams();
     const navigate = useNavigate();
     const [stockDetails, setStockDetails] = useState(null);
     const { handleStockSelection } = useContext(StockContext);
+    const { isAuthenticated, loginWithPopup } = useAuth0();
+    const [alertInfo, setAlertInfo] = useState(null);
+    const location = useLocation();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/stockDetail/${symbol}`);
+                const response = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/stockDetail/${Symbol}`);
+                if (!response.data) setAlertInfo({ title: `No stock named ${Symbol} found!` });
                 setStockDetails(response.data);
             } catch (error) {
                 console.error(error);
-                //alert("Failed to fetch stock data. Please try again later.");
             }
         };
 
         fetchData();
-    }, [symbol]);
+    }, [Symbol]);
 
     useEffect(() => {
         if (stockDetails === null) {
@@ -34,34 +38,88 @@ const StockDetail = () => {
         }
     }, [stockDetails, navigate]);
 
-    const handleClick = () => {
-        handleStockSelection(stockDetails.symbol, stockDetails.lastPrice);
-        navigate('/order');
+    const handleClick = async () => {
+        handleStockSelection(stockDetails.Symbol, stockDetails.LTP);
+        if (isAuthenticated) {
+            navigate('/order');
+        } else {
+            loginWithPopup({ redirectUri: `${process.env.REACT_APP_FRONTEND}/market/${Symbol}` });
+        }
     };
-
 
     return (
         <div>
-            {stockDetails === null && <Alert alert={{ type: 'danger', message: 'No stock data found. Redirecting back to Market...' }} />}
+            {alertInfo && (
+                <CustomAlert
+                    title={alertInfo.title}
+                    onClose={() => setAlertInfo(null)}
+                />
+            )}
             {stockDetails !== null ? (
                 <div className={styles.container}>
                     <div className={styles.card}>
                         <div className={styles.content}>
-                            <div className={styles.title}>{stockDetails.symbol}</div>
-                            <div className={styles.price}>Open: {stockDetails.open.toFixed(2)}</div>
-                            <div className={styles.price}>Day High: {stockDetails.dayHigh.toFixed(2)}</div>
-                            <div className={styles.price}>Day Low: {stockDetails.dayLow.toFixed(2)}</div>
-                            <div className={styles.price}>Last Price: {stockDetails.lastPrice.toFixed(2)}</div>
-                            <div className={styles.price}>Previous Close: {stockDetails.previousClose.toFixed(2)}</div>
-                            <div className={styles.price}>Change: {stockDetails.change.toFixed(2)}</div>
-                            <div className={styles.price}>% Change: {stockDetails.pChange.toFixed(2)}</div>
-                            <div className={styles.price}>Year High: {stockDetails.yearHigh.toFixed(2)}</div>
-                            <div className={styles.price}>Year Low: {stockDetails.yearLow.toFixed(2)}</div>
-                            <div className={styles.price}>Total Traded Volume: {stockDetails.totalTradedVolume.toFixed(2)}</div>
-                            <div className={styles.price}>Total Traded Value: {stockDetails.totalTradedValue.toFixed(2)}</div>
-                            <div className={styles.price}>Last Update Time: {stockDetails.lastUpdateTime}</div>
-                            <div className={styles.price}>% Change (365 days): {stockDetails.perChange365d.toFixed(2)}</div>
-                            <div className={styles.price}>% Change (30 days): {stockDetails.perChange30d.toFixed(2)}</div>
+                            <div className={styles.title}>{stockDetails.Name}</div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>Symbol: </span> {stockDetails.Symbol}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>Percent Change: </span>
+                                <span className={`${styles.value} ${stockDetails.PercentChange < 0 ? styles.negative : ''}`}>
+                                    {stockDetails.PercentChange}%
+                                </span>
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>LTP: </span> ₹{stockDetails.LTP}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>Net Change: </span>
+                                <span className={`${styles.value} ${stockDetails.NetChange < 0 ? styles.negative : ''}`}>
+                                    ₹{stockDetails.NetChange}
+                                </span>
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>Total Volume: </span> {stockDetails.TotalVolume}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>Volume: </span> {stockDetails.Volume}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>High: </span> ₹{stockDetails.High}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>Low: </span> ₹{stockDetails.Low}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>Open: </span> ₹{stockDetails.Open}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>Previous Close (PClose): </span> ₹{stockDetails.PClose}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>52 Week High: </span> ₹{stockDetails.Week52High}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>52 Week Low: </span> ₹{stockDetails.Week52Low}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>5 Year High: </span> ₹{stockDetails.Year5High}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>1 Month High: </span> ₹{stockDetails.Month1High}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>3 Month High: </span> ₹{stockDetails.Month3High}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>6 Month High: </span> ₹{stockDetails.Month6High}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>Date and Time: </span> {new Date(stockDetails.DateTime).toLocaleString()}
+                            </div>
+                            <div className={styles.item}>
+                                <span className={styles.property}>ISIN: </span> {stockDetails.ISIN}
+                            </div>
                         </div>
                         <button className={styles.button} onClick={handleClick}>Buy/Sell</button>
                     </div>

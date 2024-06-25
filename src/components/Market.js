@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import CustomAlert from './CustomAlert.js';
 
 const Market = () => {
     const [stocks, setStocks] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState('NIFTY');
-    const [selectedStock, setSelectedStock] = useState('NIFTY');
     const [currentPage, setCurrentPage] = useState(1);
+    const [alertInfo, setAlertInfo] = useState('');
     const stocksPerPage = 21;
     const navigate = useNavigate();
 
@@ -16,8 +17,7 @@ const Market = () => {
                 const response = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/stocks/${selectedIndex}`);
                 setStocks(response.data);
             } catch (error) {
-                console.error(error);
-                alert("Failed to fetch stock data. Please try again later.");
+                setAlertInfo({ title: 'Server Error!' })
             }
         };
 
@@ -25,8 +25,7 @@ const Market = () => {
     }, [selectedIndex]);
 
     const handleClick = (stock) => {
-        setSelectedStock(stock.symbol);
-        navigate(`/market/${stock.symbol}`);
+        navigate(`/market/${stock.Symbol}`);
     };
 
     const handleIndexChange = (event) => {
@@ -69,7 +68,6 @@ const Market = () => {
                                             {stock.NetChange < 0 ? `- ₹ ${Math.abs(stock.NetChange)}` : `₹ ${stock.NetChange}`}
                                         </span>
                                     </p>
-
                                 </div>
                             </div>
                         </div>
@@ -122,20 +120,25 @@ const Market = () => {
         'NIFTY', 'BANKNIFTY', 'NIFTYOIL', 'NIFTYPVTBANK', 'NIFTYM50', 'NSEQ30'
     ];
     return (
-        <div style={{ backgroundColor: 'white' }}>
-            <div className="container text-center mt-4">
-                <h3>Select Stock Index</h3>
-                <select value={selectedIndex} onChange={handleIndexChange}>
-                    {indexOptions.map((option, index) => (
-                        <option key={index} value={option}>
-                            {option}
-                        </option>
-                    ))}
-                </select>
+        <>
+            {alertInfo && (<CustomAlert title={alertInfo.title}
+                onClose={() => setAlertInfo(null)} />)}
+            <div style={{ backgroundColor: 'white' }}>
+                <div className="container text-center mt-4">
+                    <h3>Select Stock Index</h3>
+                    <select value={selectedIndex} onChange={handleIndexChange}>
+                        {indexOptions.map((option, index) => (
+                            <option key={index} value={option}>
+                                {option}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+                {renderStockCards()}
             </div>
-            {renderStockCards()}
-        </div>
+        </>
     );
+
 };
 
 export default Market;

@@ -1,0 +1,167 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap');
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.pageNumbersContainer {
+    display: flex;
+    gap: 10px;
+}
+
+.pageItem {
+    margin: 0 2px;
+}
+
+.pageLink {
+    font-weight: bold;
+    background-color: #f0f0f0;
+    color: black;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.pageLink.active {
+    background-color: #19F5AA;
+    color: white;
+}
+
+.pageLink.disabled {
+    background-color: #f0f0f0;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.button {
+    margin: 0 5px;
+    background-color: #f0f0f0;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.button.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+.orderContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cardContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.card {
+    width: 100%;
+    min-height: 150px;
+    /* Reduced from 200px */
+    border-radius: 15px;
+    background: #e0e0e0;
+    box-shadow: 5px 5px 10px #bebebe, -5px -5px 10px #ffffff;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    /* Reduced from 20px */
+    text-align: left;
+    color: black;
+}
+
+.card h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    /* Reduced from 10px */
+    font-size: 1.1em;
+    /* Reduced from 1.2em */
+}
+
+.card p {
+    margin: 4px 0;
+    /* Reduced from 5px */
+    font-size: 0.85em;
+    /* Reduced from 0.9em */
+}
+
+/* New styles for user info and toggle */
+.userInfo {
+    width: 100%;
+    background-color: #15d3c7;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.overviewTitle {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.toggleContainer {
+    margin: 20px 0;
+}
+
+.toggle {
+    display: flex;
+    align-items: center;
+    gap: .2rem;
+    font-weight: 900;
+    font-size: 2rem;
+    color: hsl(119, 84%, 10%);
+    text-shadow: 0 0 2px #e8e8e8;
+}
+
+.toggleSwitch {
+    --bg-toggle: hsl(0, 0%, 100%);
+    --bg-circle: hsl(119, 84%, 10%);
+    --w-toggle-switch: 80px;
+    --w-h-toggle-circle: 25px;
+    --pd-toggle-switch: .3rem;
+    height: 35px;
+    width: var(--w-toggle-switch);
+    background-color: var(--bg-toggle);
+    border-radius: 2rem;
+    display: flex;
+    align-items: center;
+    padding: 0 var(--pd-toggle-switch);
+    cursor: pointer;
+    transition: background-color 500ms;
+}
+
+.toggleCircle {
+    width: var(--w-h-toggle-circle);
+    height: var(--w-h-toggle-circle);
+    background-color: var(--bg-circle);
+    border-radius: 50%;
+    transition: margin 400ms ease-in-out, background-color 1000ms;
+}
+
+#orderTypeToggle:checked+.toggle .toggleCircle {
+    margin-left: calc(var(--w-toggle-switch) - (var(--pd-toggle-switch) * 2) - var(--w-h-toggle-circle));
+}
+
+#orderTypeToggle:checked+.toggle>.toggleSwitch {
+    --bg-toggle: hsl(119, 84%, 10%);
+    --bg-circle: hsl(0, 0%, 96%);
+    box-shadow: 0 .3rem 5rem 0 hsla(96, 85%, 34%, 30%);
+}

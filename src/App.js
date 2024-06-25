@@ -8,12 +8,13 @@ import Navbar from './components/Navbar.js';
 import StockDetail from './components/StockDetail.js';
 import Order from './components/Order.js';
 import Profile from './components/Profile.js';
+import Portfolio from './components/Portfolio.js';
 import NotFoundComponent from './components/Missing.js';
 import { StockProvider } from './components/context/StockContext.js';
+import Notification from './components/Notification.js';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
@@ -21,7 +22,7 @@ function ScrollToTop() {
   return null;
 }
 
-function App() {
+const App = () => {
   return (
     <StockProvider>
       <BrowserRouter>
@@ -34,7 +35,9 @@ function App() {
           <Route exact path="/market" element={<Market />} />
           <Route exact path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFoundComponent />} />
-          <Route exact path="/market/:symbol" element={<StockDetail />} />
+          <Route path="/portfolio" element={<Portfolio/>} />
+          <Route exact path="/order/success" element={<Notification />} />
+          <Route exact path="/market/:Symbol" element={<StockDetail />} />
           <Route path="/order" element={<Order />} />
         </Routes>
       </BrowserRouter>
