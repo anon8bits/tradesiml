@@ -77,6 +77,10 @@ const fetchAndUpdateAllStockData = async () => {
             await delay(1000);
         }
     }
+    // for (const index of indicies) {
+    //     await fetchAndUpdateStockData(index);
+    //     await delay(1000);
+    // }
 };
 
 fetchAndUpdateAllStockData();

@@ -10,12 +10,12 @@ const orderSchema = Joi.object({
     orderType: Joi.string().valid('Buy', 'Sell').required(),
     stopLoss: Joi.number().min(0).allow(0),
     symbol: Joi.string().required(),
-    targetPrice: Joi.number().min(0).required()
+    targetPrice: Joi.number().min(0).required(),
+    timeFrame: Joi.number().min(1).max(7).required()
 });
 
 export const validateOrder = async (req, res, next) => {
     try {
-        console.log(req.body);
         const { error } = orderSchema.validate(req.body);
         if (error) {
             return res.status(400).json({ error: error.details[0].message });
@@ -23,12 +23,12 @@ export const validateOrder = async (req, res, next) => {
 
         const { email, entryPrice, orderQuantity, symbol } = req.body;
 
-        const user = await User.findOne({ email : email });
+        const user = await User.findOne({ email });
         if (!user) {
             return res.status(400).json({ error: 'User not found' });
         }
 
-        const stock = await Stock.findOne({ Symbol : symbol });
+        const stock = await Stock.findOne({ Symbol: symbol });
         if (!stock) {
             return res.status(400).json({ error: 'Invalid stock symbol' });
         }
@@ -37,6 +37,10 @@ export const validateOrder = async (req, res, next) => {
         if (orderValue > user.balance) {
             return res.status(400).json({ error: 'Insufficient balance' });
         }
+
+        user.balance -= orderValue;
+        await user.save();
+
         req.user = user;
         req.stock = stock;
         req.amount = orderValue;

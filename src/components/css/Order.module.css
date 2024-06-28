@@ -34,6 +34,7 @@
   display: flex;
   align-items: center;
   padding-left: 30px;
+  justify-content: center;
 }
 
 .title::before,
@@ -45,18 +46,21 @@
   border-radius: 50%;
   left: 0px;
   background-color: royalblue;
+  justify-content: center;
 }
 
 .title::before {
   width: 18px;
   height: 18px;
   background-color: royalblue;
+  justify-content: center;
 }
 
 .title::after {
   width: 18px;
   height: 18px;
   animation: pulse 1s linear infinite;
+  justify-content: center;
 }
 
 .message,
@@ -193,8 +197,6 @@
   }
 }
 
-/* The switch - the box around the slider */
-/* The switch - the box around the slider */
 .switch {
   font-size: 17px;
   position: relative;
@@ -203,14 +205,12 @@
   height: 35px;
 }
 
-/* Hide default HTML checkbox */
 .switch input {
   opacity: 1;
   width: 0;
   height: 0;
 }
 
-/* The slider */
 .slider {
   position: absolute;
   cursor: pointer;
@@ -219,11 +219,9 @@
   right: 0;
   bottom: 0px;
   background: #5fdd54;
-  /* Green when switch is off */
   transition: .4s;
   border-radius: 30px;
   border: 1px solid transparent;
-  /* Transparent border */
 }
 
 .slider:before {
@@ -236,14 +234,12 @@
   top: 0;
   bottom: 0;
   background-color: rgb(255, 255, 255);
-  /* White circle */
   box-shadow: 0 2px 5px #999999;
   transition: .4s;
 }
 
 input:checked+.slider {
   background-color: #e81b1b;
-  /* Red when switch is on */
 }
 
 input:checked+.slider:before {
@@ -273,4 +269,95 @@ input:checked+.slider:before {
 /* Remove spinner for Firefox */
 .input[type="number"] {
   -moz-appearance: textfield;
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 500px;
+  color: black;
+  text-align: center;
+}
+
+.modal p,
+.modal li {
+  color: black;
+}
+
+.modal ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 auto;
+  display: inline-block;
+  text-align: left;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.modalButtons button {
+  padding: 12.5px 30px;
+  border: 0;
+  border-radius: 100px;
+  background-color: #2ba8fb;
+  color: #ffffff;
+  font-weight: Bold;
+  transition: all 0.5s;
+  -webkit-transition: all 0.5s;
+}
+
+.modalButtons button:hover {
+  background-color: #6fc5ff;
+  box-shadow: 0 0 20px #6fc5ff50;
+  transform: scale(1.1);
+}
+
+.modalButtons button:active {
+  background-color: #3d94cf;
+  transition: all 0.25s;
+  -webkit-transition: all 0.25s;
+  box-shadow: none;
+  transform: scale(0.98);
+}
+
+.modalButtons button:first-child {
+  background-color: #3b981c;
+}
+
+.modalButtons button:last-child {
+  background-color: #fb2b2b;
+}
+
+.modalButtons button:last-child:hover {
+  background-color: #ff6f6f;
+  box-shadow: 0 0 20px #ff6f6f50;
+}
+
+.modalButtons button:last-child:active {
+  background-color: #cf3d3d;
+}
+
+.warning {
+  color: red;
+  font-weight: bold;
+  margin-top: 10px;
 }

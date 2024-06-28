@@ -25,6 +25,11 @@ const userSchema = new Schema({
         required: true,
         default: 0
     },
+    unrealizedPL: {
+        type: Number,
+        required: true,
+        default: 0
+    },
     date: {
         type: Date,
         default: Date.now

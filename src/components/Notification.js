@@ -27,10 +27,10 @@ const Notification = ({ orderDetails }) => {
                         <div className={styles['success-prompt-prompt']}>
                             <p>Your {orderDetails.orderType} order for {orderDetails.orderQuantity} shares of {orderDetails.symbol} has been successfully placed.</p>
                             <ul>
-                                <li>Entry Price: ₹{parseFloat(orderDetails.entryPrice).toFixed(2)}</li>
-                                <li>Target Price: ₹{parseFloat(orderDetails.targetPrice).toFixed(2)}</li>
+                                <li>Entry Price: ₹{parseFloat(orderDetails.entryPrice)}</li>
+                                <li>Target Price: ₹{parseFloat(orderDetails.targetPrice)}</li>
                                 {orderDetails.stopLoss > 0 && (
-                                    <li>Stop Loss: ₹{parseFloat(orderDetails.stopLoss).toFixed(2)}</li>
+                                    <li>Stop Loss: ₹{parseFloat(orderDetails.stopLoss)}</li>
                                 )}
                             </ul>
                             <p>This trade will reflect in your paper trading portfolio.</p>

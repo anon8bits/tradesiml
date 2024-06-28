@@ -1,7 +1,7 @@
 import { Router } from "express";
-import validateOrder from '../middlewares/validateOrder.js'
+import validateOrder from '../middlewares/validateOrder.js';
 import OpenOrder from "../models/OpenOrders.js";
-import User from "../models/Users.js";
+
 const router = Router();
 
 router.post('/', validateOrder, async (req, res) => {
@@ -13,7 +13,8 @@ router.post('/', validateOrder, async (req, res) => {
             orderType,
             stopLoss,
             symbol,
-            targetPrice
+            targetPrice,
+            timeFrame
         } = req.body;
 
         const currentStockPrice = req.stock.LTP;
@@ -24,7 +25,8 @@ router.post('/', validateOrder, async (req, res) => {
             triggered = currentStockPrice >= entryPrice;
         }
 
-            
+        const validity = Date.now() + 24 * 60 * 60 * 1000 * timeFrame;
+
         const newOrder = new OpenOrder({
             userEmail: email,
             stockName: symbol,
@@ -34,14 +36,16 @@ router.post('/', validateOrder, async (req, res) => {
             stopLoss,
             type: orderType,
             triggered,
-            PL: triggered ? 0 : null
+            PL: triggered ? 0 : null,
+            validity: validity
         });
+
         await newOrder.save();
         res.status(201).json(newOrder);
     } catch (error) {
+        console.error(error); 
         res.status(500).json('Internal server error');
     }
-
 });
 
-export default router;
+export default router

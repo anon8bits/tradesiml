@@ -9,6 +9,7 @@ import Tooltip from './InfoToolTip.js';
 import { useAuth0 } from '@auth0/auth0-react';
 import Loading from './Loading.js';
 import Notification from './Notification.js';
+import ConfirmModal from './ConfirmModal.js'
 
 const Order = () => {
   const { symbol, lastPrice } = useContext(StockContext);
@@ -17,6 +18,7 @@ const Order = () => {
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [orderDetails, setOrderDetails] = useState(null);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -90,7 +92,7 @@ const Order = () => {
     setTimeFrame('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -99,8 +101,9 @@ const Order = () => {
     }
     if (!user) {
       loginWithRedirect();
+      return;
     }
-    // console.log('User: ', user);
+
     const email = user.email;
     const finalEntryPrice = entryPrice || lastPrice;
     const finalStopLoss = stopLoss || 0;
@@ -113,13 +116,17 @@ const Order = () => {
       targetPrice: parseFloat(targetPrice),
       stopLoss: finalStopLoss,
       orderType: orderType === 1 ? 'Buy' : 'Sell',
+      timeFrame: parseInt(timeFrame, 10),
     };
 
-    console.log('Order executed:', orderData);
+    setOrderDetails(orderData);
+    setShowConfirmModal(true);
+  };
 
+  const submitOrder = async () => {
     try {
       setLoading(true);
-      const response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/order`, orderData, {
+      const response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/order`, orderDetails, {
         headers: {
           'Content-Type': 'application/json',
         }
@@ -127,7 +134,6 @@ const Order = () => {
       setLoading(false);
       if (response.status === 201) {
         setOrderPlaced(true);
-        setOrderDetails(orderData)
       } else {
         const res = await response.json();
         setAlertInfo({ title: `${res.error}` });
@@ -135,6 +141,9 @@ const Order = () => {
       }
     } catch (error) {
       console.error('Error placing order:', error);
+      setAlertInfo({ title: 'Error placing order. Please try again.' });
+    } finally {
+      setShowConfirmModal(false);
     }
   };
 
@@ -201,6 +210,13 @@ const Order = () => {
           <button type="submit" className={styles.submit}>Execute Order</button>
         </form>
       </div>
+      {showConfirmModal && (
+        <ConfirmModal
+          orderDetails={orderDetails}
+          onConfirm={submitOrder}
+          onCancel={() => setShowConfirmModal(false)}
+        />
+      )}
     </>
   );
 };

@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 const { Schema, model } = mongoose;
 
-const openOrderSchema = new Schema({
-    user: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
+const closedOrderSchema = new Schema({
+    userEmail: {
+        type: String,
+        ref: 'user',
         required: true
     },
     stockName: {
@@ -31,16 +31,21 @@ const openOrderSchema = new Schema({
         type: Number,
         required: true
     },
-    validity: {
-        type: Date,
-        required: true
-    },
     status: {
-        type: String,
-        default: 'Active' // or 'Expired' if not executed within validity
+        type: String
+    },
+    PL: {
+        type: Number,
+        default: 0
+    },
+    OrderStartTime: {
+        type: Date
+    },
+    OrderCloseTime: {
+        type: Date
     }
 });
 
-const OpenOrder = model('OpenOrder', openOrderSchema);
+const ClosedOrder = model('ClosedOrder', closedOrderSchema);
 
-export default OpenOrder;
+export default ClosedOrder;

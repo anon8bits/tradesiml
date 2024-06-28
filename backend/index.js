@@ -8,6 +8,11 @@ import userDetails from './routes/UserDetails.js'
 import stockRoute from './routes/GetStocks.js'
 import StockDetailRoute from './routes/GetStockDetails.js';
 import FetchOpenOrders from './routes/FetchOpenOrders.js'
+import FetchClosedOrders from './routes/FetchClosedOrders.js'
+import OpenOrderDetails from './routes/openOrderDetails.js'
+import ClosedOrderDetails from './routes/closedOrderDetails.js';
+import CancelOrder from './routes/cancelOrder.js'
+import ExecuteNow from './routes/ExecuteNow.js'
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 
@@ -30,9 +35,13 @@ app.use('/api/order', orderRoute);
 app.use('/api/stocks', stockRoute);
 app.use('/api/stockDetail', StockDetailRoute);
 app.use('/api/fetchOpenOrders', FetchOpenOrders);
+app.use('/api/fetchClosedOrders', FetchClosedOrders);
 app.use('/api/getUser', userDetails);
-
-//fetchAndUpdateAllStockData();
+app.use('/api/open', OpenOrderDetails);
+app.use('/api/closed', ClosedOrderDetails);
+app.use('/api/cancelOrder', CancelOrder);
+app.use('/api/executenow', ExecuteNow);
+fetchAndUpdateAllStockData();
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
