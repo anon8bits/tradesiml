@@ -2,22 +2,28 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import CustomAlert from './CustomAlert.js';
+import styles from './css/Search.module.css';
 
 const Market = () => {
     const [stocks, setStocks] = useState([]);
     const [selectedIndex, setSelectedIndex] = useState('NIFTY');
     const [currentPage, setCurrentPage] = useState(1);
     const [alertInfo, setAlertInfo] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
     const stocksPerPage = 21;
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/stocks/${selectedIndex}`);
+                const response = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/stocks/${selectedIndex}`, {
+                    withCredentials: true, 
+                });
                 setStocks(response.data);
+                setSearchTerm('');
             } catch (error) {
-                setAlertInfo({ title: 'Server Error!' })
+                console.log(error);
+                setAlertInfo({ title: 'Server Error!' });
             }
         };
 
@@ -31,16 +37,27 @@ const Market = () => {
     const handleIndexChange = (event) => {
         setSelectedIndex(event.target.value);
         setCurrentPage(1);
-        console.log('Index: ', selectedIndex);
     };
 
+    const handleSearch = (event) => {
+        setSearchTerm(event.target.value);
+        setCurrentPage(1);
+    };
+
+    const clearSearch = () => {
+        setSearchTerm('');
+        setCurrentPage(1);
+    };
 
     const renderStockCards = () => {
+        const filteredStocks = stocks.filter(stock =>
+            stock.Symbol.toLowerCase().includes(searchTerm.toLowerCase())
+        );
         const indexOfLastStock = currentPage * stocksPerPage;
         const indexOfFirstStock = indexOfLastStock - stocksPerPage;
-        const currentStocks = stocks.slice(indexOfFirstStock, indexOfLastStock);
+        const currentStocks = filteredStocks.slice(indexOfFirstStock, indexOfLastStock);
 
-        const totalPages = Math.ceil(stocks.length / stocksPerPage);
+        const totalPages = Math.ceil(filteredStocks.length / stocksPerPage);
 
         let startPage = Math.max(1, currentPage - 5);
         let endPage = Math.min(totalPages, startPage + 9);
@@ -56,23 +73,33 @@ const Market = () => {
 
         return (
             <div className="container mt-4" style={{ backgroundColor: 'white' }}>
-                <div className="row">
-                    {currentStocks.map((stock) => (
-                        <div key={stock.symbol} className="col-md-4 mb-4">
-                            <div className="card" onClick={() => handleClick(stock)} style={{ border: '2px solid green', borderRadius: '10px', backgroundColor: 'white' }}>
-                                <div className="card-body" style={{ fontWeight: 'bold', textAlign: 'center', color: 'black', padding: '0.75rem' }}>
-                                    <div style={{ backgroundColor: '#19F5AA', color: 'white', borderRadius: '10px 10px 0 0', padding: '0.5rem 0', marginBottom: '0.5rem' }}>{stock.Symbol}</div>
-                                    <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>Last Price: ₹{stock.LTP}</p>
-                                    <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>
-                                        Change: <span style={{ color: stock.NetChange < 0 ? 'red' : 'green' }}>
-                                            {stock.NetChange < 0 ? `- ₹ ${Math.abs(stock.NetChange)}` : `₹ ${stock.NetChange}`}
-                                        </span>
-                                    </p>
+                {filteredStocks.length === 0 ? (
+                    <p>No results found</p>
+                ) : (
+                    <div className="row">
+                        {currentStocks.map((stock) => (
+                            <div key={stock.Symbol} className="col-md-4 mb-4">
+                                <div className="card" onClick={() => handleClick(stock)} style={{ border: '2px solid green', borderRadius: '10px', backgroundColor: 'white' }}>
+                                    <div className="card-body" style={{ fontWeight: 'bold', textAlign: 'center', color: 'black', padding: '0.75rem' }}>
+                                        <div style={{ backgroundColor: '#19F5AA', color: 'white', borderRadius: '10px 10px 0 0', padding: '0.5rem 0', marginBottom: '0.5rem' }}>{stock.Symbol}</div>
+                                        <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>Last Price: ₹{stock.LTP}</p>
+                                        <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>
+                                            Change: <span style={{ color: stock.NetChange < 0 ? 'red' : 'green' }}>
+                                                {stock.NetChange < 0 ? `- ₹ ${Math.abs(stock.NetChange)}` : `₹ ${stock.NetChange}`}
+                                            </span>
+                                        </p>
+                                        <p className="card-text" style={{ fontWeight: 'bold', color: 'black' }}>
+                                            Percent Change: <span style={{ color: stock.PercentChange < 0 ? 'red' : 'green' }}>
+                                                {`${stock.PercentChange} %`}
+                                            </span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
+                )}
+
                 <div className="pagination d-flex justify-content-center" style={{ marginBottom: '20px' }}>
                     <button
                         key="prev"
@@ -103,29 +130,25 @@ const Market = () => {
                         Next
                     </button>
                 </div>
-
-
-
             </div>
         );
     };
 
-
-
-
-
-
-
     const indexOptions = [
         'NIFTY', 'BANKNIFTY', 'NIFTYOIL', 'NIFTYPVTBANK', 'NIFTYM50', 'NSEQ30'
     ];
+
     return (
         <>
-            {alertInfo && (<CustomAlert title={alertInfo.title}
-                onClose={() => setAlertInfo(null)} />)}
+            {alertInfo && (
+                <CustomAlert
+                    title={alertInfo.title}
+                    onClose={() => setAlertInfo(null)}
+                />
+            )}
             <div style={{ backgroundColor: 'white' }}>
                 <div className="container text-center mt-4">
-                    <h3>Select Stock Index</h3>
+                    <h3 style={{ color: 'black' }}><strong>Select Stock Index</strong></h3>
                     <select value={selectedIndex} onChange={handleIndexChange}>
                         {indexOptions.map((option, index) => (
                             <option key={index} value={option}>
@@ -133,12 +156,21 @@ const Market = () => {
                             </option>
                         ))}
                     </select>
+                    <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+                        <input
+                            className={styles.input}
+                            type="text"
+                            name="text"
+                            placeholder="Search stocks..."
+                            value={searchTerm}
+                            onChange={handleSearch}
+                        />
+                    </div>
                 </div>
                 {renderStockCards()}
             </div>
         </>
     );
-
 };
 
 export default Market;

@@ -13,8 +13,11 @@ import OpenOrderDetails from './routes/openOrderDetails.js'
 import ClosedOrderDetails from './routes/closedOrderDetails.js';
 import CancelOrder from './routes/cancelOrder.js'
 import ExecuteNow from './routes/ExecuteNow.js'
+import Test from './routes/Test.js'
 import dotenv from 'dotenv';
-import cookieParser from 'cookie-parser';
+import allowedOrigins from './corsConfig.js';
+import fs from 'fs'
+import https from 'https'
 
 dotenv.config({ path: '../.env' });
 connectDB();
@@ -24,11 +27,22 @@ const port = process.env.BACK_PORT;
 
 
 app.use(json());
-app.use(cookieParser());
+
+const options = {
+  key: fs.readFileSync('C:/Users/Anonymous/.vscode/React/tradesiml/backend/SSL Certificate/server.key'),
+  cert: fs.readFileSync('C:/Users/Anonymous/.vscode/React/tradesiml/backend/SSL Certificate/server.cert')
+};
+
 app.use(cors({
-  origin: process.env.CORS_ADD,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  },
   credentials: true,
-  optionsSuccessStatus: 200,
+  optionsSuccessStatus: 200
 }));
 app.use('/api/auth', authRoutes);
 app.use('/api/order', orderRoute);
@@ -41,8 +55,9 @@ app.use('/api/open', OpenOrderDetails);
 app.use('/api/closed', ClosedOrderDetails);
 app.use('/api/cancelOrder', CancelOrder);
 app.use('/api/executenow', ExecuteNow);
-fetchAndUpdateAllStockData();
+app.use('/api/test', Test);
+//fetchAndUpdateAllStockData();
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-})
+https.createServer(options, app).listen(port, '0.0.0.0', () => {
+  console.log(`App listening on https://localhost:${port}`);
+});

@@ -1,11 +1,44 @@
-import React from 'react'
+import React, {useState} from 'react'
 import '../assets/bootstrap/css/bootstrap.min.css';
 import '../assets/fonts/font-awesome.min.css';
 import '../assets/css/Pretty-Footer-.css';
-import Image1 from '../assets/img/products/1.jpg';
+import styles from './css/Header.module.css';
 import Image2 from '../assets/img/products/2.jpg';
 import Image3 from '../assets/img/products/3.jpg';
+import { useNavigate } from 'react-router-dom';
 const Home = () => {
+
+    const navigate = useNavigate();
+
+    const handleSignUpClick = () => {
+        navigate('/login');
+    }
+
+    const handleMarketClick = () => {
+        navigate('/market');
+    }
+
+    const [formData, setFormData] = useState({
+        name: '',
+        email: '',
+        message: ''
+    });
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const subject = encodeURIComponent(`Feedback from ${formData.name}`);
+        const body = encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage: ${formData.message}`);
+        window.location.href = `mailto:priyanshukr19@gmail.com?subject=${subject}&body=${body}`;
+    };
+
     return (
         <>
             <header className="bg-white">
@@ -18,15 +51,12 @@ const Home = () => {
                             </div>
                         </div>
                         <div className="col-12 col-lg-10 mx-auto">
-                            <div className="position-relative" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                                <div style={{ position: 'relative', flex: '0 0 45%', transform: 'translate3d(-15%, 35%, 0)' }}>
-                                    <img className="img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.8" src={Image3} alt="Product 3" />
-                                </div>
-                                <div style={{ position: 'relative', flex: '0 0 45%', transform: 'translate3d(-5%, 20%, 0)' }}>
+                            <div className={styles.imageContainer}>
+                                <div className={styles.imageWrapper}>
                                     <img className="img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.4" src={Image2} alt="Product 2" />
                                 </div>
-                                <div style={{ position: 'relative', flex: '0 0 60%', transform: 'translate3d(0, 0%, 0)' }}>
-                                    <img className="img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.25" src={Image1} alt="Product 1" />
+                                <div className={styles.imageWrapper}>
+                                    <img className="img-fluid" data-bss-parallax="" data-bss-parallax-speed="0.8" src={Image3} alt="Product 3" />
                                 </div>
                             </div>
                         </div>
@@ -49,7 +79,14 @@ const Home = () => {
                                     <div className="card-body d-flex flex-column justify-content-center align-items-center px-4 py-5 px-md-5" style={{ marginBottom: '-2px', backgroundColor: 'white', border: '1px solid #19F5AA', borderRadius: '10px' }}>
                                         <h5 className="fw-bold card-title" style={{ color: 'black', marginBottom: '20px' }}>Invest Virtual Money</h5>
                                         <p className="card-text mb-4" style={{ color: 'black', textAlign: 'center' }}>Master the stock market risk-free with our paper trading platform. Practice trading stocks in real-time, sharpening your skills before investing real money.</p>
-                                        <button className="btn btn-primary shadow" type="button" style={{ backgroundColor: '#19F5AA', borderColor: '#19F5AA', color: 'black' }}>Sign Up</button>
+                                        <button
+                                            className="btn btn-primary shadow"
+                                            type="button"
+                                            style={{ backgroundColor: '#19F5AA', borderColor: '#19F5AA', color: 'black' }}
+                                            onClick={handleSignUpClick}
+                                        >
+                                            Sign Up
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -58,7 +95,14 @@ const Home = () => {
                                     <div className="card-body d-flex flex-column justify-content-center align-items-center px-4 py-5 px-md-5" style={{ marginBottom: '-2px', backgroundColor: 'white', border: '1px solid #19F5AA', borderRadius: '10px' }}>
                                         <h5 className="fw-bold card-title" style={{ color: 'black', marginBottom: '20px' }}>Best Stocks Today</h5>
                                         <p className="card-text mb-4" style={{ color: 'black', textAlign: 'center' }}>Explore today's market movers with ease. Discover top gainers and losers, empowering informed decisions for your trading strategies</p>
-                                        <button className="btn btn-primary shadow" type="button" style={{ backgroundColor: '#19F5AA', borderColor: '#19F5AA', color: 'black' }}>Market</button>
+                                        <button
+                                            className="btn btn-primary shadow"
+                                            type="button"
+                                            style={{ backgroundColor: '#19F5AA', borderColor: '#19F5AA', color: 'black' }}
+                                            onClick={handleMarketClick}
+                                        >
+                                            Market
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -68,7 +112,7 @@ const Home = () => {
                 </div>
             </section>
             <section></section>
-            <section className="py-5" >
+            <section className="py-5">
                 <div className="container">
                     <div className="row mb-5">
                         <div className="col-md-8 col-xl-6 text-center mx-auto">
@@ -79,14 +123,49 @@ const Home = () => {
                     <div className="row d-flex justify-content-center">
                         <div className="col-md-6 col-xl-4">
                             <div>
-                                <form className="p-3 p-xl-4" method="post">
-                                    <div className="mb-3"><input className="form-control" type="text" id="name-1" name="name" placeholder="Name" /></div>
-                                    <div className="mb-3"><input className="form-control" type="email" id="email-1" name="email" placeholder="Email" /></div>
-                                    <div className="mb-3"><textarea className="form-control" id="message-1" name="message" rows="6" placeholder="Message"></textarea></div>
-                                    <div>
-                                        <button className="btn shadow d-block w-100" type="submit" style={{ backgroundColor: '#19F5AA' }}>Send</button>
+                                <form className="p-3 p-xl-4" onSubmit={handleSubmit}>
+                                    <div className="mb-3">
+                                        <input
+                                            className="form-control"
+                                            type="text"
+                                            id="name-1"
+                                            name="name"
+                                            placeholder="Name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                        />
                                     </div>
-
+                                    <div className="mb-3">
+                                        <input
+                                            className="form-control"
+                                            type="email"
+                                            id="email-1"
+                                            name="email"
+                                            placeholder="Email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                        />
+                                    </div>
+                                    <div className="mb-3">
+                                        <textarea
+                                            className="form-control"
+                                            id="message-1"
+                                            name="message"
+                                            rows="6"
+                                            placeholder="Message"
+                                            value={formData.message}
+                                            onChange={handleInputChange}
+                                        ></textarea>
+                                    </div>
+                                    <div>
+                                        <button
+                                            className="btn shadow d-block w-100"
+                                            type="submit"
+                                            style={{ backgroundColor: '#19F5AA' }}
+                                        >
+                                            Send
+                                        </button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
@@ -103,7 +182,7 @@ const Home = () => {
                                     </div>
                                     <div className="px-2">
                                         <h6 className="fw-bold mb-0" style={{ color: 'black' }}>Email</h6>
-                                        <p className=" mb-0" style={{ color: 'black' }}>priyanshukr19@gmail.com</p>
+                                        <p className="mb-0" style={{ color: 'black' }}>priyanshukr19@gmail.com</p>
                                     </div>
                                 </div>
                                 <div className="d-flex align-items-center p-3"></div>

@@ -11,7 +11,6 @@
     transition: 0.5s ease-out;
     overflow: visible;
     margin: 15px;
-    /* This adds space around each card */
 }
 
 .cardDetails {
@@ -21,7 +20,6 @@
     display: grid;
     place-content: center;
     font-family: Arial, sans-serif;
-    /* Changed to a simpler font */
 }
 
 .cardButton {
@@ -42,7 +40,6 @@
     transition: 0.3s ease-out;
     cursor: pointer;
     font-family: Arial, sans-serif;
-    /* Changed to match the card details */
 }
 
 .textBody {

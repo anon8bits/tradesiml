@@ -1,0 +1,36 @@
+.imageContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.imageWrapper {
+    position: relative;
+    flex: 0 0 45%;
+}
+
+.imageWrapper:first-child {
+    transform: translate3d(-5%, 20%, 0);
+}
+
+.imageWrapper:last-child {
+    transform: translate3d(-15%, 35%, 0);
+}
+
+@media (max-width: 992px) {
+    .imageContainer {
+        justify-content: center;
+    }
+
+    .imageWrapper {
+        flex: 0 0 100%;
+        max-width: 80%;
+        margin-bottom: 20px;
+        transform: none !important;
+    }
+
+    .imageWrapper img {
+        width: 100%;
+        height: auto;
+    }
+}

@@ -10,8 +10,6 @@ import { faUser, faPowerOff } from '@fortawesome/free-solid-svg-icons';
 library.add(faUser, faPowerOff);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-console.log('Domain:', process.env.REACT_APP_AUTH0_DOMAIN);
-console.log('Client ID:', process.env.REACT_APP_AUTH0_CLIENTID);
 root.render(
   <Auth0Provider
     domain="dev-igqjd2dbnlcr71c4.us.auth0.com"

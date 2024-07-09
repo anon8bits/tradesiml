@@ -13,7 +13,6 @@ const StockDetail = () => {
     const { handleStockSelection } = useContext(StockContext);
     const { isAuthenticated, loginWithPopup } = useAuth0();
     const [alertInfo, setAlertInfo] = useState(null);
-    const location = useLocation();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,6 +46,10 @@ const StockDetail = () => {
         }
     };
 
+    const handleBack = () => {
+        navigate('/market');
+    }
+
     return (
         <div>
             {alertInfo && (
@@ -58,6 +61,9 @@ const StockDetail = () => {
             {stockDetails !== null ? (
                 <div className={styles.container}>
                     <div className={styles.card}>
+                        <button className={styles.backButton} onClick={handleBack}>
+                            ← Return
+                        </button>
                         <div className={styles.content}>
                             <div className={styles.title}>{stockDetails.Name}</div>
                             <div className={styles.item}>
@@ -75,9 +81,10 @@ const StockDetail = () => {
                             <div className={styles.item}>
                                 <span className={styles.property}>Net Change: </span>
                                 <span className={`${styles.value} ${stockDetails.NetChange < 0 ? styles.negative : ''}`}>
-                                    ₹{stockDetails.NetChange}
+                                    {stockDetails.NetChange < 0 ? `-₹${Math.abs(stockDetails.NetChange)}` : `₹${stockDetails.NetChange}`}
                                 </span>
                             </div>
+
                             <div className={styles.item}>
                                 <span className={styles.property}>Total Volume: </span> {stockDetails.TotalVolume}
                             </div>
