@@ -13,7 +13,7 @@ import ConfirmModal from './ConfirmModal.js'
 
 const Order = () => {
   const { symbol, lastPrice } = useContext(StockContext);
-  const { isAuthenticated, loginWithRedirect, isLoading, user } = useAuth0();
+  const { isAuthenticated, loginWithRedirect, isLoading, user, getAccessTokenSilently } = useAuth0();
   const [alertInfo, setAlertInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -103,13 +103,10 @@ const Order = () => {
       loginWithRedirect();
       return;
     }
-
-    const email = user.email;
     const finalEntryPrice = entryPrice || lastPrice;
     const finalStopLoss = stopLoss || 0;
 
     const orderData = {
-      email,
       symbol,
       entryPrice: finalEntryPrice,
       orderQuantity: parseInt(orderQuantity, 10),
@@ -125,10 +122,15 @@ const Order = () => {
 
   const submitOrder = async () => {
     try {
+      const token = await getAccessTokenSilently({
+        audience: 'https://tradesiml.tech/',
+        scope: 'email'
+      });
       setLoading(true);
       const response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/order`, orderDetails, {
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
         }
       });
       setLoading(false);

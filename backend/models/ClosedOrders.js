@@ -7,6 +7,9 @@ const closedOrderSchema = new Schema({
         ref: 'user',
         required: true
     },
+    type: {
+        type: String
+    },
     stockName: {
         type: String,
         required: true

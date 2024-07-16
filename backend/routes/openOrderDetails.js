@@ -1,10 +1,12 @@
 import { Router } from "express";
 import OpenOrder from "../models/OpenOrders.js";
+import { checkJwt, extractEmail } from '../middlewares/auth0Middleware.js'
 
 const router = Router();
 
-router.get('/:orderID/:email', async (req, res) => {
-    const { orderID, email } = req.params;
+router.get('/:orderID', checkJwt, extractEmail, async (req, res) => {
+    const orderID = req.params.orderID;
+    const email = req.body.email;
     try {
         const order = await OpenOrder.findById(orderID);
         if (!order) {

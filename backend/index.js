@@ -1,30 +1,21 @@
 import connectDB from './database.js';
 import express, { json } from 'express';
-import authRoutes from './routes/auth.js';
-import orderRoute from './routes/ExecuteOrder.js'
 import cors from 'cors';
-import fetchAndUpdateAllStockData from './routes/FetchStocks.js';
-import userDetails from './routes/UserDetails.js'
-import stockRoute from './routes/GetStocks.js'
-import StockDetailRoute from './routes/GetStockDetails.js';
-import FetchOpenOrders from './routes/FetchOpenOrders.js'
-import FetchClosedOrders from './routes/FetchClosedOrders.js'
-import OpenOrderDetails from './routes/openOrderDetails.js'
-import ClosedOrderDetails from './routes/closedOrderDetails.js';
-import CancelOrder from './routes/cancelOrder.js'
-import ExecuteNow from './routes/ExecuteNow.js'
-import Test from './routes/Test.js'
 import dotenv from 'dotenv';
 import allowedOrigins from './corsConfig.js';
-import fs from 'fs'
-import https from 'https'
+import fs from 'fs';
+import https from 'https';
+import routes from './routes/routes.js';
+import cron from 'node-cron'
+import moment from 'moment-timezone';
+import startStockDataCron from './routes/FetchStocks.js';
+import updateOpenOrders from './orderUpdate.js';
 
 dotenv.config({ path: '../.env' });
 connectDB();
 
 const app = express();
 const port = process.env.BACK_PORT;
-
 
 app.use(json());
 
@@ -44,19 +35,38 @@ app.use(cors({
   credentials: true,
   optionsSuccessStatus: 200
 }));
-app.use('/api/auth', authRoutes);
-app.use('/api/order', orderRoute);
-app.use('/api/stocks', stockRoute);
-app.use('/api/stockDetail', StockDetailRoute);
-app.use('/api/fetchOpenOrders', FetchOpenOrders);
-app.use('/api/fetchClosedOrders', FetchClosedOrders);
-app.use('/api/getUser', userDetails);
-app.use('/api/open', OpenOrderDetails);
-app.use('/api/closed', ClosedOrderDetails);
-app.use('/api/cancelOrder', CancelOrder);
-app.use('/api/executenow', ExecuteNow);
-app.use('/api/test', Test);
-//fetchAndUpdateAllStockData();
+
+// Dynamically use all routes
+Object.entries(routes).forEach(([path, router]) => {
+  app.use(path, router);
+});
+
+startStockDataCron();
+
+const isMarketOpen = () => {
+  const now = moment().tz('Asia/Kolkata');
+  const dayOfWeek = now.day();
+  const hour = now.hour();
+  const minute = now.minute();
+
+  if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+    const currentTimeInMinutes = hour * 60 + minute;
+    const marketOpenTime = 9 * 60 + 15;
+    const marketCloseTime = 15 * 60 + 30;
+    return currentTimeInMinutes >= marketOpenTime && currentTimeInMinutes < marketCloseTime;
+  }
+
+  return false;
+};
+cron.schedule('*/5 * * * *', async () => {
+  if (isMarketOpen()) {
+    try {
+      await updateOpenOrders();
+    } catch (error) {
+      console.error('Error updating open orders:', error);
+    }
+  }
+});
 
 https.createServer(options, app).listen(port, '0.0.0.0', () => {
   console.log(`App listening on https://localhost:${port}`);

@@ -1,6 +1,8 @@
 import axios from 'axios';
 import Stock from '../models/Stocks.js';
-import dotenv from 'dotenv'
+import dotenv from 'dotenv';
+import cron from 'node-cron';
+import moment from 'moment-timezone';
 
 dotenv.config({ path: '../.env' });
 
@@ -20,7 +22,6 @@ const fetchAndUpdateStockData = async (index) => {
             }
         });
         const stocksData = response.data;
-        // console.log('Stocks data: ', stocksData);
 
         for (const stock of stocksData) {
             if (!stock.ISIN || typeof stock.ISIN !== 'string') continue;
@@ -66,24 +67,48 @@ const delay = (ms) => {
 };
 
 const fetchAndUpdateAllStockData = async () => {
-    const now = new Date();
-    const startTime = new Date();
-    startTime.setHours(9, 15, 0); // 9:15 AM IST
-    const endTime = new Date();
-    endTime.setHours(15, 45, 0); // 3:45 PM IST
-    if (now >= startTime && now <= endTime) {
-        for (const index of indicies) {
-            await fetchAndUpdateStockData(index);
-            await delay(1000);
-        }
+    for (const index of indicies) {
+        await fetchAndUpdateStockData(index);
+        await delay(1000);
     }
-    // for (const index of indicies) {
-    //     await fetchAndUpdateStockData(index);
-    //     await delay(1000);
-    // }
 };
 
-fetchAndUpdateAllStockData();
-setInterval(fetchAndUpdateAllStockData, 5 * 60 * 1000);
+const isMarketOpen = () => {
+    const now = moment().tz('Asia/Kolkata');
+    const dayOfWeek = now.day(); // 0 is Sunday, 1 is Monday, ..., 6 is Saturday
+    const hour = now.hour();
+    const minute = now.minute();
 
-export default fetchAndUpdateAllStockData;
+    // Check if it's a weekday (Monday to Friday)
+    if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+        // Convert current time to minutes since midnight
+        const currentTimeInMinutes = hour * 60 + minute;
+
+        // Market open time: 9:15 AM (555 minutes)
+        const marketOpenTime = 9 * 60 + 15;
+
+        // Market close time: 3:30 PM (930 minutes)
+        const marketCloseTime = 15 * 60 + 30;
+
+        // Check if current time is within market hours
+        return currentTimeInMinutes >= marketOpenTime && currentTimeInMinutes < marketCloseTime;
+    }
+
+    return false;
+};
+
+const startStockDataCron = () => {
+    // Schedule the cron job to run every 5 minutes
+    cron.schedule('*/5 * * * *', async () => {
+        if (isMarketOpen()) {
+            try {
+                await fetchAndUpdateAllStockData();
+                console.log('Stock data updated successfully');
+            } catch (error) {
+                console.error('Error updating stock data:', error);
+            }
+        }
+    });
+};
+
+export default startStockDataCron;

@@ -151,3 +151,71 @@
 .greenButton:after {
     background-color: #126717;
 }
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.modalContent h2 {
+    color: black;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+.modalContent p {
+    color: black;
+    margin-bottom: 20px;
+}
+
+.modalButtons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.modalButtons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+.modalButtons button:first-child {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+.modalButtons button:first-child:hover {
+    background-color: #ff3333;
+}
+
+.modalButtons button:last-child {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.modalButtons button:last-child:hover {
+    background-color: #45a049;
+}

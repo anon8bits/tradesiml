@@ -2,6 +2,9 @@ import styles from './css/Order.module.css';
 
 const ConfirmModal = ({ orderDetails, onConfirm, onCancel }) => {
     const isStopLossZero = orderDetails.stopLoss === 0;
+    const formatNumber = (num) => {
+        return Number(num).toFixed(2);
+    };
 
     return (
         <div className={styles.modalOverlay}>
@@ -11,12 +14,12 @@ const ConfirmModal = ({ orderDetails, onConfirm, onCancel }) => {
                 <ul>
                     <li>Symbol: <strong>{orderDetails.symbol}</strong></li>
                     <li>Order Type: <strong>{orderDetails.orderType}</strong></li>
-                    <li>Entry Price: <strong>₹{orderDetails.entryPrice.toFixed(2)}</strong></li>
+                    <li>Entry Price: <strong>₹{formatNumber(orderDetails.entryPrice)}</strong></li>
                     <li>Quantity: <strong>{orderDetails.orderQuantity}</strong></li>
-                    <li>Target Price: <strong>₹{orderDetails.targetPrice.toFixed(2)}</strong></li>
-                    <li>Stop Loss: <strong>₹{orderDetails.stopLoss.toFixed(2)}</strong></li>
+                    <li>Target Price: <strong>₹{formatNumber(orderDetails.targetPrice)}</strong></li>
+                    <li>Stop Loss: <strong>₹{formatNumber(orderDetails.stopLoss)}</strong></li>
                     <li>Time Frame: <strong>{orderDetails.timeFrame} days</strong></li>
-                    <li>Total Amount: <strong>₹ {(orderDetails.entryPrice.toFixed(2) * orderDetails.orderQuantity.toFixed(2)).toFixed(2)}</strong></li>
+                    <li>Total Amount: <strong>₹ {(formatNumber(orderDetails.entryPrice)* formatNumber(orderDetails.orderQuantity))}</strong></li>
                 </ul>
                 {isStopLossZero && (
                     <p className={styles.warning}>

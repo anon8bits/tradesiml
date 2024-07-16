@@ -38,9 +38,6 @@ export const validateOrder = async (req, res, next) => {
             return res.status(400).json({ error: 'Insufficient balance' });
         }
 
-        user.balance -= orderValue;
-        await user.save();
-
         req.user = user;
         req.stock = stock;
         req.amount = orderValue;

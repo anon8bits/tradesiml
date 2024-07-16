@@ -7,7 +7,7 @@ import styles from './css/ViewOrders.module.css';
 import styles2 from './css/PortfolioOverview.module.css';
 
 const ViewOrders = () => {
-    const { isAuthenticated, isLoading, user, loginWithRedirect } = useAuth0();
+    const { isAuthenticated, isLoading, user, loginWithRedirect, getAccessTokenSilently } = useAuth0();
     const [openOrders, setOpenOrders] = useState([]);
     const [closedOrders, setClosedOrders] = useState([]);
     const [userInfo, setUserInfo] = useState(null);
@@ -24,15 +24,25 @@ const ViewOrders = () => {
 
     useEffect(() => {
         const fetchData = async () => {
+            const token = await getAccessTokenSilently({
+                audience: 'https://tradesiml.tech/',
+                scope: 'email'
+            });
             try {
                 const userResponse = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/getUser`, {
-                    params: { email: user.email }
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 });
                 const openOrdersResponse = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/fetchOpenOrders`, {
-                    params: { email: user.email }
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 });
                 const closedOrdersResponse = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/fetchClosedOrders`, {
-                    params: { email: user.email }
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
                 });
                 setUserInfo(userResponse.data);
                 setOpenOrders(openOrdersResponse.data);

@@ -14,6 +14,11 @@ const StockDetail = () => {
     const { isAuthenticated, loginWithPopup } = useAuth0();
     const [alertInfo, setAlertInfo] = useState(null);
 
+    const openTradingViewChart = () => {
+        const formattedSymbol = Symbol.replace(/-/g, '_');
+        window.open(`https://in.tradingview.com/chart/?symbol=NSE%3A${formattedSymbol}`, '_blank');
+    };
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -128,6 +133,9 @@ const StockDetail = () => {
                                 <span className={styles.property}>ISIN: </span> {stockDetails.ISIN}
                             </div>
                         </div>
+                        <button className={`${styles.button} ${styles.tradingViewButton}`} onClick={openTradingViewChart}>
+                            View Chart <span className={styles.outlink}>↗</span>
+                        </button>
                         <button className={styles.button} onClick={handleClick}>Buy/Sell</button>
                     </div>
                 </div>

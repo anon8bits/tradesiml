@@ -1,6 +1,7 @@
 import { Router } from "express";
 import mongoose from "mongoose";
 import OpenOrder from "../models/OpenOrders.js";
+import { checkJwt, extractEmail } from '../middlewares/auth0Middleware.js'
 
 const router = Router();
 
@@ -21,9 +22,10 @@ const verifyOrderAndUser = async (orderId, email, model) => {
     return order;
 };
 
-router.post('/:orderId/:email', async (req, res) => {
+router.post('/:orderId', checkJwt, extractEmail, async (req, res) => {
     try {
-        const { orderId, email } = req.params;
+        const orderId = req.params.orderId;
+        const email = req.email;
         const order = await verifyOrderAndUser(orderId, email, OpenOrder);
 
         if (order.triggered) {

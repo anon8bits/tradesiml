@@ -1,24 +1,16 @@
-import { Router } from "express";
-import ClosedOrder from "../models/ClosedOrders.js";
+import { Router } from 'express';
+import ClosedOrder from '../models/ClosedOrders.js';
+import { checkJwt, extractEmail } from '../middlewares/auth0Middleware.js';
 
 const router = Router();
 
-router.get('/', async (req, res) => {
+router.get('/', checkJwt, extractEmail, async (req, res) => {
     try {
-        const email = req.query.email; 
-        if (!email) {
-            return res.status(400).json({ error: "Email is required" });
-        }
-
+        const email = req.email;
         const orders = await ClosedOrder.find({ userEmail: email }).sort({ OrderCloseTime: -1 });
-
-        // if (orders.length === 0) {
-        //     return res.status(404).json({ message: "No orders found for this user" });
-        // }
-
         res.status(200).json(orders);
     } catch (error) {
-        res.status(500).json({error});
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

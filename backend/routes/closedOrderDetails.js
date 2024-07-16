@@ -1,11 +1,12 @@
 import { Router } from "express";
 import ClosedOrder from "../models/ClosedOrders.js";
+import { checkJwt, extractEmail } from '../middlewares/auth0Middleware.js'
 
 const router = Router();
 
-router.get('/:orderID/:email', async (req, res) => {
-    const { orderID, email } = req.params;
-
+router.get('/:orderID', checkJwt, extractEmail, async (req, res) => {
+    const orderID = req.params.orderID;
+    const email = req.body.email;
     try {
         const order = await ClosedOrder.findById(orderID);
         if (!order) {

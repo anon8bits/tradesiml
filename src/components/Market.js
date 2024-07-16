@@ -44,11 +44,6 @@ const Market = () => {
         setCurrentPage(1);
     };
 
-    const clearSearch = () => {
-        setSearchTerm('');
-        setCurrentPage(1);
-    };
-
     const renderStockCards = () => {
         const filteredStocks = stocks.filter(stock =>
             stock.Symbol.toLowerCase().includes(searchTerm.toLowerCase())

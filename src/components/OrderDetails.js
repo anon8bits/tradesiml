@@ -5,7 +5,25 @@ import { useAuth0 } from '@auth0/auth0-react';
 import Loading from './Loading.js';
 import NotFoundComponent from './Missing.js';
 import CustomNotification from './CustomNotification.js';
+import CustomAlert from './CustomAlert.js';
 import styles from './css/OrderDetails.module.css';
+
+const ConfirmationModal = ({ isOpen, onClose, onConfirm, action }) => {
+    if (!isOpen) return null;
+
+    return (
+        <div className={styles.modalOverlay}>
+            <div className={styles.modalContent}>
+                <h2>Confirm Action</h2>
+                <p>Are you sure you want to {action}?</p>
+                <div className={styles.modalButtons}>
+                    <button onClick={onClose}>Cancel</button>
+                    <button onClick={onConfirm}>Confirm</button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 const OrderDetails = () => {
     const [loading, setLoading] = useState(true);
@@ -14,7 +32,10 @@ const OrderDetails = () => {
     const [error, setError] = useState(null);
     const [cancelled, setCancelled] = useState(false);
     const [executed, setExecuted] = useState(false);
-    const { user, isAuthenticated, isLoading, loginWithRedirect } = useAuth0();
+    const [showModal, setShowModal] = useState(false);
+    const [modalAction, setModalAction] = useState('');
+    const [alert, setAlert] = useState(null);
+    const { user, isAuthenticated, isLoading, loginWithRedirect, getAccessTokenSilently } = useAuth0();
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -25,8 +46,15 @@ const OrderDetails = () => {
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                const email = user.email;
-                const response = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/${status}/${orderID}/${email}`);
+                const token = await getAccessTokenSilently({
+                    audience: 'https://tradesiml.tech/',
+                    scope: 'email'
+                });
+                const response = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/${status}/${orderID}`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 setOrderDetails(response.data);
                 setLoading(false);
             } catch (error) {
@@ -38,7 +66,7 @@ const OrderDetails = () => {
         if (user && user.email) {
             fetchDetails();
         }
-    }, [user]);
+    }, [user, status, orderID, getAccessTokenSilently]);
 
     if (isLoading || loading) {
         return <Loading />;
@@ -64,33 +92,61 @@ const OrderDetails = () => {
         return Number(num).toFixed(2);
     };
 
-    const cancelOrder = async () => {
-        setLoading(true);
-        try {
-            const email = user.email;
-            const response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/cancelOrder/${orderID}/${email}`);
-            setLoading(false);
-            if (response.status === 200) {
-                setCancelled(true);
-            }
-        } catch (error) {
-            setLoading(false);
-        }
-    }
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleString();
+    };
 
-    const executeNow = async () => {
+    const cancelOrder = () => {
+        setModalAction('cancel this order');
+        setShowModal(true);
+    };
+
+    const executeNow = () => {
+        const action = orderDetails.type === 'Buy' ? 'sell' : 'buy back';
+        setModalAction(`${action} now`);
+        setShowModal(true);
+    };
+
+    const handleConfirm = async () => {
+        setShowModal(false);
         setLoading(true);
         try {
-            const email = user.email;
-            const response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/executenow/${orderID}/${email}`);
-            setLoading(false);
-            if (response.status === 200) {
-                setExecuted(true);
+            const token = await getAccessTokenSilently({
+                audience: 'https://tradesiml.tech/',
+                scope: 'email'
+            });
+            let response;
+            if (modalAction === 'cancel this order') {
+                response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/cancelOrder/${orderID}`, {}, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if (response.status === 200) {
+                    setCancelled(true);
+                }
+            } else {
+                response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/executenow/${orderID}`, {}, {
+                    headers: {
+                        "Content-Type": 'application-json',
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                if (response.status === 200) {
+                    setExecuted(true);
+                }
             }
         } catch (error) {
+            console.error('Error:', error);
+            setAlert({
+                title: 'Error',
+                message: `Failed to ${modalAction}. Please try again later.`
+            });
+        } finally {
             setLoading(false);
         }
-    }
+    };
 
     const renderButton = () => {
         if (!orderDetails.triggered && status === 'open') {
@@ -125,6 +181,18 @@ const OrderDetails = () => {
                             <span className={styles.detailName}>Order ID:</span>
                             <span className={styles.detailValue}>{orderID}</span>
                         </div>
+                        {status === 'closed' && (
+                            <div className={styles.detail}>
+                                <span className={styles.detailName}>Status:</span>
+                                <span className={styles.detailValue}>{orderDetails.status}</span>
+                            </div>
+                        )}
+                        {status === 'open' && (
+                            <div className={styles.detail}>
+                                <span className={styles.detailName}>Triggered:</span>
+                                <span className={styles.detailValue}>{orderDetails.triggered ? 'Yes' : 'No'}</span>
+                            </div>
+                        )}
                         <div className={styles.detail}>
                             <span className={styles.detailName}>Stock Name:</span>
                             <span className={styles.detailValue}>{orderDetails.stockName}</span>
@@ -132,10 +200,6 @@ const OrderDetails = () => {
                         <div className={styles.detail}>
                             <span className={styles.detailName}>Type:</span>
                             <span className={styles.detailValue}>{orderDetails.type}</span>
-                        </div>
-                        <div className={styles.detail}>
-                            <span className={styles.detailName}>Quantity:</span>
-                            <span className={styles.detailValue}>{orderDetails.orderQuantity}</span>
                         </div>
                         <div className={styles.detail}>
                             <span className={styles.detailName}>Entry Price:</span>
@@ -146,20 +210,46 @@ const OrderDetails = () => {
                             <span className={styles.detailValue}>₹{formatNumber(orderDetails.targetPrice)}</span>
                         </div>
                         <div className={styles.detail}>
+                            <span className={styles.detailName}>Quantity:</span>
+                            <span className={styles.detailValue}>{orderDetails.orderQuantity}</span>
+                        </div>
+                        <div className={styles.detail}>
                             <span className={styles.detailName}>Stop Loss:</span>
                             <span className={styles.detailValue}>₹{formatNumber(orderDetails.stopLoss)}</span>
                         </div>
-
                         <div className={styles.detail}>
-                            <span className={styles.detailName}>{status === 'open' ? 'Unrealized P/L:' : 'Realized P/L:'}</span>
-                            <span className={orderDetails.PL < 0 ? styles.loss : styles.profit}>
-                                ₹{formatNumber(orderDetails.PL)}
-                            </span>
+                            <span className={styles.detailName}>Order Start Time:</span>
+                            <span className={styles.detailValue}>{formatDate(orderDetails.OrderStartTime)}</span>
                         </div>
+                        {status === 'closed' && (
+                            <div className={styles.detail}>
+                                <span className={styles.detailName}>Order Close Time:</span>
+                                <span className={styles.detailValue}>{formatDate(orderDetails.OrderCloseTime)}</span>
+                            </div>
+                        )}
+                        {status === 'open' && !orderDetails.triggered && (
+                            <div className={styles.detail}>
+                                <span className={styles.detailName}>Validity:</span>
+                                <span className={styles.detailValue}>{orderDetails.validity}</span>
+                            </div>
+                        )}
                         {renderButton()}
                     </div>
                 </div>
             ) : <Loading />}
+            <ConfirmationModal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                onConfirm={handleConfirm}
+                action={modalAction}
+            />
+            {alert && (
+                <CustomAlert
+                    title={alert.title}
+                    message={alert.message}
+                    onClose={() => setAlert(null)}
+                />
+            )}
         </>
     );
 };

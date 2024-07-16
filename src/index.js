@@ -15,7 +15,9 @@ root.render(
     domain="dev-igqjd2dbnlcr71c4.us.auth0.com"
     clientId="MLNzULVFltzdMt8ldLxybXYGX5QupIQc"
     authorizationParams={{
-      redirect_uri: window.location.origin
+      redirect_uri: window.location.origin,
+      audience: 'https://tradesiml.tech/',
+      scope: 'openid profile email'
     }}
   >
     <App />
