@@ -2,7 +2,6 @@ import axios from 'axios';
 import Stock from '../models/Stocks.js';
 import dotenv from 'dotenv';
 import cron from 'node-cron';
-import moment from 'moment-timezone';
 
 dotenv.config({ path: '../.env' });
 
@@ -74,10 +73,21 @@ const fetchAndUpdateAllStockData = async () => {
 };
 
 const isMarketOpen = () => {
-    const now = moment().tz('Asia/Kolkata');
-    const dayOfWeek = now.day(); // 0 is Sunday, 1 is Monday, ..., 6 is Saturday
-    const hour = now.hour();
-    const minute = now.minute();
+    const getKolkataTime = () => {
+        const now = new Date();
+        const options = { timeZone: 'Asia/Kolkata', hour12: false };
+        const [{ value: weekday }, , , , { value: hour }, , { value: minute }] =
+            new Intl.DateTimeFormat('en-US', { ...options, weekday: 'long', hour: 'numeric', minute: 'numeric' })
+                .formatToParts(now);
+
+        return {
+            dayOfWeek: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].indexOf(weekday),
+            hour: parseInt(hour),
+            minute: parseInt(minute)
+        };
+    };
+
+    const { dayOfWeek, hour, minute } = getKolkataTime();
 
     // Check if it's a weekday (Monday to Friday)
     if (dayOfWeek >= 1 && dayOfWeek <= 5) {

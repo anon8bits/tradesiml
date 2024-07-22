@@ -3,6 +3,7 @@ import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 import Loading from './Loading.js';
 import OrderCard from './OrderCard.js';
+import CustomAlert from './CustomAlert.js';
 import styles from './css/ViewOrders.module.css';
 import styles2 from './css/PortfolioOverview.module.css';
 
@@ -14,7 +15,51 @@ const ViewOrders = () => {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [showOpenOrders, setShowOpenOrders] = useState(true);
+    const [amount, setAmount] = useState('');
+    const [alert, setAlert] = useState(null);
     const cardsPerPage = 5;
+
+    const handleAddMoney = async () => {
+        const cleanAmount = amount.replace(/[,\s]/g, '');
+        if (!/^\d+$/.test(cleanAmount) || parseInt(cleanAmount) < 1 || parseInt(cleanAmount) > 1000000) {
+            setAlert({
+                title: "Invalid Amount",
+                message: "Amount should be an integer between 1 and 1,000,000",
+                type: "error"
+            });
+            setAmount('');
+            return;
+        }
+        const amountNum = parseInt(cleanAmount);
+        try {
+            const token = await getAccessTokenSilently({
+                audience: 'https://tradesiml.tech/',
+                scope: 'email'
+            });
+
+            const response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/addMoney`,
+                { amount: amountNum },
+                {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            setAmount(''); // Clear the input
+            setAlert({ title: "Success!", message: "Money added successfully", type: "success" });
+            const userResponse = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/getUser`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            setUserInfo(userResponse.data);
+        } catch (error) {
+            console.error('Error adding money:', error);
+            setAlert({ title: "Error!", message: "Could not add money", type: "error" });
+        }
+    };
 
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
@@ -57,7 +102,7 @@ const ViewOrders = () => {
         if (user && user.email) {
             fetchData();
         }
-    }, [user]);
+    }, [user, getAccessTokenSilently]);
 
     const calculateUnrealizedPL = () => {
         return openOrders.reduce((total, order) => total + (order.PL || 0), 0);
@@ -103,35 +148,60 @@ const ViewOrders = () => {
     return (
         <div className={styles.orderContainer}>
             {userInfo && (
-                <div className={styles2.card}>
-                    <h2 className={styles.overviewTitle}>Portfolio Overview</h2>
-                    <p className={styles2.infoText}>
-                        <span className={styles2.infoIconWrapper}>
-                            <span className={styles2.infoIcon}>i</span>
-                            <span className={styles2.tooltipText}>
-                                The amount of funds currently available in your account for trading
+                <div>
+                    <div className={styles2.card}>
+                        <h2 className={styles.overviewTitle}>Portfolio Overview</h2>
+                        <p className={styles2.infoText}>
+                            <span className={styles2.infoIconWrapper}>
+                                <span className={styles2.infoIcon}>i</span>
+                                <span className={styles2.tooltipText}>
+                                    The amount of funds currently available in your account for trading
+                                </span>
                             </span>
-                        </span>
-                        Current Balance: {formatIndianCurrency(userInfo.balance)}
-                    </p>
-                    <p className={styles2.infoText}>
-                        <span className={styles2.infoIconWrapper}>
-                            <span className={styles2.infoIcon}>i</span>
-                            <span className={styles2.tooltipText}>
-                                The sum of realized and unrealized profit/loss across all your trades
+                            Current Balance: {formatIndianCurrency(userInfo.balance)}
+                        </p>
+                        <p className={styles2.infoText}>
+                            <span className={styles2.infoIconWrapper}>
+                                <span className={styles2.infoIcon}>i</span>
+                                <span className={styles2.tooltipText}>
+                                    The sum of realized profit/loss across all your trades
+                                </span>
                             </span>
-                        </span>
-                        Total P/L: {renderPLValue(userInfo.netPL)}
-                    </p>
-                    <p className={styles2.infoText}>
-                        <span className={styles2.infoIconWrapper}>
-                            <span className={styles2.infoIcon}>i</span>
-                            <span className={styles2.tooltipText}>
-                                Potential profit/loss from open positions if they were closed at current market prices
+                            Total P/L: {renderPLValue(userInfo.netPL)}
+                        </p>
+                        <p className={styles2.infoText}>
+                            <span className={styles2.infoIconWrapper}>
+                                <span className={styles2.infoIcon}>i</span>
+                                <span className={styles2.tooltipText}>
+                                    Potential profit/loss from open positions if they were closed at current market prices
+                                </span>
                             </span>
-                        </span>
-                        Unrealized P/L: {renderPLValue(calculateUnrealizedPL())}
-                    </p>
+                            Unrealized P/L: {renderPLValue(calculateUnrealizedPL())}
+                        </p>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', marginTop: '20px' }}>
+                        <div className={styles2.inputContainer} style={{ flex: 1 }}>
+                            <input
+                                placeholder="Add trading balance"
+                                className={styles2.inputField}
+                                type="text"
+                                value={amount}
+                                onChange={(e) => setAmount(e.target.value)}
+                            />
+                            <label htmlFor="input-field" className={styles2.inputLabel}>Enter amount (Max. ₹10,00,000)</label>
+                            <span className={styles2.inputHighlight}></span>
+                        </div>
+                        <button className={styles2.button} onClick={handleAddMoney} style={{ marginLeft: '10px' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" viewBox="0 0 20 20" height="20" fill="none" className={styles2.svgIcon}>
+                                <g strokeWidth="1.5" strokeLinecap="round" stroke="#de8a2a">
+                                    <circle r="7.5" cy="10" cx="10"></circle>
+                                    <path d="m9.99998 7.5v5"></path>
+                                    <path d="m7.5 9.99998h5"></path>
+                                </g>
+                            </svg>
+                            <span className={styles2.lable}>Add</span>
+                        </button>
+                    </div>
                 </div>
             )}
 
@@ -191,6 +261,14 @@ const ViewOrders = () => {
                     Next
                 </button>
             </div>}
+            {alert && (
+                <CustomAlert
+                    title={alert.title}
+                    message={alert.message}
+                    onClose={() => setAlert(null)}
+                    type={alert.type}
+                />
+            )}
         </div>
     );
 };

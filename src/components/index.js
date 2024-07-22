@@ -10,3 +10,4 @@ export { default as Portfolio } from './Portfolio.js';
 export { default as OrderDetails } from './OrderDetails.js';
 export { default as NotFoundComponent } from './Missing.js';
 export {default as Navbar2} from './Navbar2.js'
+export {default as NewsComponent} from './News.js'
