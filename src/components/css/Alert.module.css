@@ -1,26 +1,19 @@
-.alert {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    width: 320px;
-    padding: 12px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: flex-start;
-    border-radius: 8px;
-    box-shadow: 0px 0px 5px -3px #111;
+/* COMMON STYLES*/
+.popup {
     position: fixed;
     top: 20px;
     right: 20px;
+    margin: 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 300px;
+    justify-content: space-between;
+    align-items: center;
+    display: flex;
+    border-radius: 4px;
+    padding: 12px;
+    font-weight: 400;
     z-index: 1000;
-    animation: slideIn 0.5s ease-out;
-}
-
-.error {
-    background: #EF665B;
-}
-
-.success {
-    background: #4CAF50;
+    animation: slideIn 0.3s ease-out;
 }
 
 @keyframes slideIn {
@@ -35,30 +28,82 @@
     }
 }
 
-.alert__icon {
-    width: 20px;
-    height: 20px;
-    transform: translateY(-2px);
-    margin-right: 8px;
+.popup svg {
+    width: 1.25rem;
+    height: 1.25rem;
 }
 
-.alert__icon path {
-    fill: #fff;
+.popup-icon svg {
+    margin: 5px;
+    display: flex;
+    align-items: center;
 }
 
-.alert__title {
-    font-weight: 500;
-    font-size: 14px;
-    color: #fff;
-}
-
-.alert__close {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+.close-icon {
     margin-left: auto;
 }
 
-.alert__close path {
-    fill: #fff;
+.close-svg {
+    cursor: pointer;
+}
+
+.close-path {
+    fill: grey;
+}
+
+/*SEPERATE STYLES*/
+/* SUCCESS */
+.success-popup {
+    background-color: #edfbd8;
+    border: solid 1px #84d65a;
+}
+
+.success-icon path {
+    fill: #84d65a;
+}
+
+.success-message {
+    color: #2b641e;
+}
+
+/* ALERT */
+.alert-popup {
+    background-color: #fefce8;
+    border: solid 1px #facc15;
+}
+
+.alert-icon path {
+    fill: #facc15;
+}
+
+.alert-message {
+    color: #ca8a04;
+}
+
+/* ERROR */
+.error-popup {
+    background-color: #fef2f2;
+    border: solid 1px #f87171;
+}
+
+.error-icon path {
+    fill: #f87171;
+}
+
+.error-message {
+    color: #991b1b;
+}
+
+/* INFO */
+.info-popup {
+    background-color: #eff6ff;
+    border: solid 1px #1d4ed8;
+}
+
+.info-icon path {
+    fill: #1d4ed8;
+}
+
+.info-message {
+    color: #1d4ed8;
 }

@@ -1,22 +1,35 @@
 .container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   min-height: 80vh;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
 }
 
 .card {
-  width: auto;
+  width: 100%;
   max-width: 500px;
   border-radius: 30px;
   background: #e0e0e0;
   box-shadow: 15px 15px 30px #bebebe, -15px -15px 30px #ffffff;
   padding: 20px;
-  margin: 20px;
+  margin: 20px 0;
+  box-sizing: border-box;
 }
 
 .content {
   padding: 10px;
+}
+
+.iconWrapper {
+  display: inline-block;
+  margin-left: 4px;
+  vertical-align: middle;
 }
 
 .price {
@@ -102,4 +115,54 @@
   font-size: 0.8em;
   vertical-align: super;
   margin-left: 5px;
+}
+
+.technicalAnalysis,
+.fundamentals {
+  width: 100%;
+  max-width: 700px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.technicalAnalysis h2,
+.fundamentals h2 {
+  margin-bottom: 10px;
+  text-align: center;
+  color: black;
+}
+
+.tradingviewWidgetContainer {
+  width: 100%;
+  max-width: 660px;
+  margin: 0 auto;
+}
+
+@media (min-width: 769px) {
+  .tradingviewWidgetContainer {
+    max-width: 660px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 10px;
+  }
+
+  .card,
+  .technicalAnalysis,
+  .fundamentals {
+    width: 100%;
+    max-width: none;
+    padding: 20px 10px;
+  }
+
+  .tradingviewWidgetContainer {
+    max-width: 100%;
+    padding: 0 10px;
+  }
 }

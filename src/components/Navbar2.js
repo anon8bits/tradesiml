@@ -55,7 +55,7 @@ const Navbar2 = () => {
       <div className={`${styles.navContent} ${toggleNav ? styles.active : ''}`}>
         <ul className={styles.navLinks}>
           <li><Link to="/" className={styles.links} onClick={closeMenu}>Home</Link></li>
-          <li><Link to="/about" className={styles.links} onClick={closeMenu}>About</Link></li>
+          <li><Link to="/faq" className={styles.links} onClick={closeMenu}>FAQs</Link></li>
           <li><Link to="/market" className={styles.links} onClick={closeMenu}>Market</Link></li>
           {isAuthenticated && (
             <>

@@ -23,8 +23,7 @@ const ViewOrders = () => {
         const cleanAmount = amount.replace(/[,\s]/g, '');
         if (!/^\d+$/.test(cleanAmount) || parseInt(cleanAmount) < 1 || parseInt(cleanAmount) > 1000000) {
             setAlert({
-                title: "Invalid Amount",
-                message: "Amount should be an integer between 1 and 1,000,000",
+                message: "Invalid amount! Amount should be an integer between 1 and 1,000,000",
                 type: "error"
             });
             setAmount('');
@@ -36,7 +35,6 @@ const ViewOrders = () => {
                 audience: 'https://tradesiml.tech/',
                 scope: 'email'
             });
-
             const response = await axios.post(`${process.env.REACT_APP_BACK_URL}/api/addMoney`,
                 { amount: amountNum },
                 {
@@ -47,8 +45,8 @@ const ViewOrders = () => {
                 }
             );
 
-            setAmount(''); // Clear the input
-            setAlert({ title: "Success!", message: "Money added successfully", type: "success" });
+            setAmount('');
+            if (response.status === 200) setAlert({message: "Money added successfully", type: "success" });
             const userResponse = await axios.get(`${process.env.REACT_APP_BACK_URL}/api/getUser`, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -57,7 +55,7 @@ const ViewOrders = () => {
             setUserInfo(userResponse.data);
         } catch (error) {
             console.error('Error adding money:', error);
-            setAlert({ title: "Error!", message: "Could not add money", type: "error" });
+            setAlert({message: "Could not add money", type: "error" });
         }
     };
 
@@ -263,7 +261,6 @@ const ViewOrders = () => {
             </div>}
             {alert && (
                 <CustomAlert
-                    title={alert.title}
                     message={alert.message}
                     onClose={() => setAlert(null)}
                     type={alert.type}

@@ -21,7 +21,9 @@ const OrderCard = ({ order, status }) => {
         <div className={styles.card}>
             <div className={styles.cardDetails}>
                 <p className={styles.textTitle}>{order.stockName}</p>
-                <p className={styles.textBody}> <strong>Type:</strong> {order.type}</p>
+                <p className={styles.textBody}>
+                    <strong>Type:</strong> {order.type === 'Sell' ? 'Short sell' : order.type}
+                </p>
                 <p className={styles.textBody}><strong>Quantity:</strong> {formatNumber(order.orderQuantity)}</p>
                 <p className={styles.textBody}><strong>Entry Price: </strong> {formatCurrency(order.entryPrice)}</p>
                 <p className={styles.textBody}>

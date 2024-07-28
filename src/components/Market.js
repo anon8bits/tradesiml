@@ -23,7 +23,7 @@ const Market = () => {
                 setSearchTerm('');
             } catch (error) {
                 console.log(error);
-                setAlertInfo({ title: 'Server Error!' });
+                setAlertInfo({ message: 'Server Error!', type: 'error' });
             }
         };
 
@@ -137,8 +137,9 @@ const Market = () => {
         <>
             {alertInfo && (
                 <CustomAlert
-                    title={alertInfo.title}
+                    message={alertInfo.message}
                     onClose={() => setAlertInfo(null)}
+                    type={alertInfo.type}
                 />
             )}
             <div style={{ backgroundColor: 'white' }}>

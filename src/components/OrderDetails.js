@@ -140,8 +140,8 @@ const OrderDetails = () => {
         } catch (error) {
             console.error('Error:', error);
             setAlert({
-                title: 'Error',
-                message: `Failed to ${modalAction}. Please try again later.`
+                message: `Failed to ${modalAction}. Please try again later.`,
+                type: 'error'
             });
         } finally {
             setLoading(false);
@@ -199,7 +199,9 @@ const OrderDetails = () => {
                         </div>
                         <div className={styles.detail}>
                             <span className={styles.detailName}>Type:</span>
-                            <span className={styles.detailValue}>{orderDetails.type}</span>
+                            <span className={styles.detailValue}>
+                                {orderDetails.type === 'Sell' ? 'Short sell' : orderDetails.type}
+                            </span>
                         </div>
                         <div className={styles.detail}>
                             <span className={styles.detailName}>Entry Price:</span>
@@ -245,9 +247,9 @@ const OrderDetails = () => {
             />
             {alert && (
                 <CustomAlert
-                    title={alert.title}
                     message={alert.message}
                     onClose={() => setAlert(null)}
+                    type={alert.type}
                 />
             )}
         </>
