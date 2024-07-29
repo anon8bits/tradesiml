@@ -1,7 +1,7 @@
 // src/components/ProfileComponent.js
 
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Form, FormGroup, Label, Input, InputGroup, InputGroupText, Button } from "reactstrap";
+import { Container, Row, Col, Form, FormGroup, Label, Input } from "reactstrap";
 import Loading from "./Loading.js";
 import CustomAlert from './CustomAlert.js'
 import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
@@ -13,10 +13,13 @@ export const ProfileComponent = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [alertInfo, setAlertInfo] = useState(null);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const { user, isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
     const isGoogleUser = user?.sub?.startsWith('google-oauth2|');
     console.log(JSON.stringify(user));
+
     useEffect(() => {
         const userInfo = async () => {
             const token = await getAccessTokenSilently({
@@ -40,13 +43,46 @@ export const ProfileComponent = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setUserData({
-            ...userData,
-            name: e.target.name.value,
-            email: isGoogleUser ? userData.email : e.target.email.value
-        });
+        const newName = e.target.name.value;
+        const nameRegex = /^(?!.* {3})[a-zA-Z ]{1,20}$/;
+        if (!nameRegex.test(newName) || newName.split(" ").length - 1 > 2) {
+            setAlertInfo({ message: 'Name should contain only alphabets and at most 2 whitespaces, and be no longer than 20 characters', type: 'error' });
+            return;
+        }
+        setUserData(prevData => ({
+            ...prevData,
+            name: newName
+        }));
+
+        try {
+            const token = await getAccessTokenSilently({
+                audience: 'https://tradesiml.tech/',
+                scope: 'email'
+            });
+            const response = await axios.post(
+                `${process.env.REACT_APP_BACK_URL}/api/updateUserInfo`,
+                { newName },
+                {
+                    headers: {
+                        "Content-Type": 'application/json',
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            if (response.status === 200) {
+                setAlertInfo({ message: "User name updated successfully", type: "success" });
+            } else {
+                setAlertInfo({ message: response.message, type: "error" });
+            }
+        } catch (error) {
+            setAlertInfo({ message: error.message || "An error occurred", type: "error" });
+            setUserData(prevData => ({
+                ...prevData,
+                name: prevData.name
+            }));
+        }
         setIsEditing(false);
-    }
+    };
 
     const handlePasswordChange = async () => {
         if (isGoogleUser) {
@@ -102,25 +138,14 @@ export const ProfileComponent = () => {
                             </FormGroup>
                             <FormGroup>
                                 <Label for="email" className={styles.formLabel}>Email</Label>
-                                <InputGroup>
-                                    <Input
-                                        type="email"
-                                        name="email"
-                                        id="email"
-                                        defaultValue={userData.email}
-                                        disabled={isGoogleUser}
-                                        className={isGoogleUser ? styles.disabledInput : ''}
-                                    />
-                                    {isGoogleUser && (
-                                        <InputGroupText>
-                                            <img
-                                                src="https://www.vectorlogo.zone/logos/google/google-icon.svg"
-                                                alt="Google"
-                                                className={styles.googleIcon}
-                                            />
-                                        </InputGroupText>
-                                    )}
-                                </InputGroup>
+                                <Input
+                                    type="email"
+                                    name="email"
+                                    id="email"
+                                    value={userData.email}
+                                    disabled
+                                    className={styles.disabledInput}
+                                />
                             </FormGroup>
                             <button className={`${styles.button} ${styles.confirmButton}`} type="submit">Save</button>
                             <button className={`${styles.button} ${styles.cancelButton}`} onClick={handleEdit}>Cancel</button>
