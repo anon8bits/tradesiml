@@ -13,12 +13,9 @@ export const ProfileComponent = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [alertInfo, setAlertInfo] = useState(null);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
     const { user, isLoading, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
     const isGoogleUser = user?.sub?.startsWith('google-oauth2|');
-    console.log(JSON.stringify(user));
 
     useEffect(() => {
         const userInfo = async () => {
@@ -102,7 +99,6 @@ export const ProfileComponent = () => {
                 }
             };
             const response = await axios.request(options);
-            console.log(response);
             setAlertInfo({ message: 'Password reset link sent to email!', type: 'success' });
         } catch (error) {
             setAlertInfo({ message: error.message, type: 'error' });

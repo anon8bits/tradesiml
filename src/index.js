@@ -19,6 +19,8 @@ root.render(
       audience: 'https://tradesiml.tech/',
       scope: 'openid profile email'
     }}
+    useRefreshTokens
+    cacheLocation='localstorage'
   >
     <App />
   </Auth0Provider>
