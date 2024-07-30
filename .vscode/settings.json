@@ -1,5 +1,0 @@
-{
-    "appService.defaultWebAppToDeploy": "undefined/subscriptions/7505f5b9-794a-49ac-b077-b6729b3cf13f/resourceGroups/tradesiml-frontend/providers/Microsoft.Web/sites/tradesiml",
-    "appService.deploySubpath": "build",
-    "appService.showBuildDuringDeployPrompt": false
-}
